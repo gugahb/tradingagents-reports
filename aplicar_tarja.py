@@ -49,8 +49,21 @@ def injetar(texto: str, modelos, gerado) -> str:
 
 
 def gerado_de(nome_pasta: str):
-    m = re.search(r"_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})$", nome_pasta)
-    return f"{m[3]}/{m[2]}/{m[1]} {m[4]}:{m[5]}" if m else None
+    """Só a DATA (dd/mm/aaaa); a hora da geração nunca é publicada."""
+    m = re.search(r"_(\d{4})(\d{2})(\d{2})(?:_\d{6})?$", nome_pasta)
+    return f"{m[3]}/{m[2]}/{m[1]}" if m else None
+
+
+def nome_publico(nome_pasta: str) -> str:
+    """TICKER_AAAAMMDD_HHMMSS -> TICKER_AAAAMMDD (sem hora no nome do arquivo).
+
+    Mesmo ticker no mesmo dia gera o mesmo nome: a execução mais recente sobrescreve."""
+    return re.sub(r"_(\d{8})_\d{6}$", r"_\1", nome_pasta)
+
+
+def sem_hora(texto: str) -> str:
+    """Tira a hora do campo 'Generated' que o próprio TradingAgents grava no relatório."""
+    return re.sub(r"(<dt>Generated</dt><dd>\d{4}-\d{2}-\d{2})[ T]\d{2}:\d{2}(?::\d{2})?(</dd>)", r"\1\2", texto)
 
 
 def processar(origem: Path, modelos):
@@ -58,9 +71,10 @@ def processar(origem: Path, modelos):
     if not arq.is_file():
         sys.exit(f"ERRO: {arq} não existe")
     nome = arq.parent.name
-    destino = SAIDA / f"{nome}.html"
+    destino = SAIDA / f"{nome_publico(nome)}.html"
     SAIDA.mkdir(exist_ok=True)
-    destino.write_text(injetar(arq.read_text(encoding="utf-8"), modelos, gerado_de(nome)), encoding="utf-8")
+    texto = sem_hora(arq.read_text(encoding="utf-8"))
+    destino.write_text(injetar(texto, modelos, gerado_de(nome)), encoding="utf-8")
     print(f"ok: {destino.relative_to(AQUI)}")
 
 

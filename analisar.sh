@@ -28,5 +28,5 @@ TRADINGAGENTS_MAX_RISK_ROUNDS="${TRADINGAGENTS_MAX_RISK_ROUNDS:-1}" \
 PASTA="$(find "$HOME/.tradingagents/logs/reports" -maxdepth 1 -type d -name "${TICKER}_*" -newer "$INICIO" | sort | tail -1 || true)"
 [ -n "$PASTA" ] || { echo "ERRO: relatório não encontrado (a análise falhou?)"; exit 1; }
 python3 "$AQUI/aplicar_tarja.py" "$PASTA" --modelos "$MODELOS"
-echo ">> Pronto. Abra: $AQUI/reports/$(basename "$PASTA").html"
+echo ">> Pronto. Abra: $AQUI/reports/$(basename "$PASTA" | sed -E 's/_([0-9]{8})_[0-9]{6}$/_\1/').html"
 echo ">> Falta só commitar e dar push da pasta $AQUI (feito por você)."
