@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">
+<title>MP 2026-10-05 Underweight: TradingAgents report</title>
+<style>
+:root {
+  --paper: #fbfbfa; --ink: #1c2126; --muted: #5d6670; --rule: #e2e5e8; --wash: #f2f4f5;
+  --accent: #087a59; --up: #087a59; --down: #b4372f; --level: #5d6670; --edge: #d3d8dc; --mark: #878f97;
+  --serif: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #131a1f; --ink: #e4e8eb; --muted: #9aa6af; --rule: #263239; --wash: #1a242a;
+    --accent: #14c290; --up: #14c290; --down: #ef6f63; --level: #9aa6af; --edge: #3d4c55; --mark: #66737c;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .masthead .logo [stroke="#363636"] { stroke: var(--muted); }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font: 17px/1.62 var(--serif); font-kerning: normal;
+}
+.page { max-width: 46rem; margin: 0 auto; padding: 3.5rem 1.5rem 6rem; }
+main h2, main h3 { scroll-margin-top: 1rem; }
+a { color: var(--accent); text-underline-offset: 0.15em; }
+h1, h2, h3, h4 { text-wrap: balance; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.masthead { padding-bottom: 1.75rem; border-bottom: 1px solid var(--rule); }
+/* The logo leads at the top left, where readers look for it, 24px tall (the usual
+   on-screen floor for a wordmark) with at least its height clear below. */
+.masthead .logo { display: block; width: fit-content; margin: 0 0 2.25rem; }
+.masthead .logo svg { display: block; height: 1.5rem; width: auto; }
+.masthead h1 {
+  margin: 0; font: 600 2.6rem/1.1 var(--sans); letter-spacing: -0.02em;
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.2em 0.5em;
+}
+.masthead .rating { font-weight: 500; }
+.rating.up { color: var(--up); } .rating.down { color: var(--down); } .rating.level { color: var(--level); }
+.rating.review { color: var(--muted); font-style: italic; }
+.masthead .date { margin: 0.55rem 0 1.5rem; font: 1rem/1.4 var(--sans); color: var(--muted); }
+.run { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 0.45rem 1.25rem;
+  font: 0.85rem/1.5 var(--sans); }
+.run > div { display: contents; }
+.run dt { color: var(--muted); }
+.run dd { margin: 0; overflow-wrap: anywhere; }
+.run .note dd { color: var(--down); }
+.field { display: inline-block; margin: 0 0.15rem 0.15rem 0; padding: 0 0.4rem; border: 1px solid var(--edge);
+  border-radius: 4px; background: var(--wash); font: 0.8rem/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.run .group { display: inline-block; margin-right: 0.9rem; white-space: nowrap; }
+.run .group > .name { color: var(--muted); margin-right: 0.3rem; }
+.run .then { color: var(--muted); margin: 0 0.2rem; }
+
+/* The sections: listed under the header on narrow screens. On wide ones, a
+   quiet rail centred on the left edge (numerals for the sections, short bars
+   for their agents) that opens into the full list when pointed at or focused. */
+.contents { margin: 2.25rem 0 0; font: 0.9rem/1.45 var(--sans); }
+.contents ul { margin: 0; padding: 0; list-style: none; }
+.contents > ul > li { margin: 0 0 0.75rem; }
+.contents ul ul { margin-top: 0.2rem; padding-left: 1.6rem; font-size: 0.85rem; }
+.contents ul ul li { margin: 0.1rem 0; }
+.contents a { display: flex; align-items: center; gap: 0.6rem; color: var(--muted); text-decoration: none; }
+.contents > ul > li > a { color: var(--ink); }
+.contents .num { min-width: 1.6rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.contents .bar { display: none; }
+.contents a:hover .label, .contents a:focus-visible .label { color: var(--accent); text-decoration: underline; }
+.to-top { position: fixed; right: 1rem; bottom: calc(1rem + env(safe-area-inset-bottom));
+  padding: 0.25rem 0.6rem; border: 1px solid var(--edge); border-radius: 4px; background: var(--paper);
+  color: var(--muted); font: 0.8rem/1.4 var(--sans); text-decoration: none; }
+
+@media (min-width: 60rem) {
+  .contents { position: fixed; left: 1rem; top: 50%; transform: translateY(-50%); z-index: 1;
+    max-height: 86vh; overflow-y: auto; overscroll-behavior: contain; margin: 0;
+    padding: 0.7rem 0.9rem; border: 1px solid transparent; border-radius: 6px;
+    transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s; }
+  .contents > ul > li { margin: 0 0 0.35rem; }
+  .contents ul ul { margin-top: 0; padding-left: 0; }
+  .contents ul ul li { margin: 0; }
+  /* Marks reach 3:1 contrast and rows 24px, the WCAG 2.2 floors for a control's
+     visual cue and its pointer target. */
+  .contents a { min-height: 1.5rem; }
+  .contents .num { min-width: 1.4rem; }
+  .contents .bar { display: block; flex: none; width: 1.25rem; height: 2px; margin-left: 0.2rem;
+    border-radius: 1px; background: var(--mark); }
+  .contents .label { max-width: 0; opacity: 0; overflow: hidden; white-space: nowrap;
+    transition: opacity 0.15s, max-width 0.2s; }
+  .contents:hover, .contents:focus-within { background: var(--paper); border-color: var(--rule);
+    box-shadow: 0 6px 24px rgb(0 0 0 / 0.08); }
+  .contents:hover .label, .contents:focus-within .label { max-width: 18rem; opacity: 1; }
+  .contents a:hover .bar, .contents a:focus-visible .bar { background: var(--accent); }
+  .to-top { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .contents, .contents .label { transition: none; }
+}
+
+/* The maker's credit: one quiet line at the foot. */
+.credit { margin-top: 4.5rem; padding-top: 1.25rem; border-top: 1px solid var(--rule);
+  color: var(--muted); font: 0.8rem/1.4 var(--sans); }
+.credit a { color: inherit; text-decoration: none; }
+.credit a.brand { color: var(--accent); }
+.credit a:hover, .credit a:focus-visible { text-decoration: underline; }
+
+/* Three levels of separation: the five groups, the agents within a group, and
+   breaks an agent draws inside its own text. */
+main h2 {
+  margin: 4.5rem 0 0.25rem; padding-top: 1.5rem; border-top: 2px solid var(--ink);
+  font: 600 1.45rem/1.3 var(--sans); letter-spacing: -0.01em;
+}
+main section:first-child h2 { margin-top: 3rem; }
+main h3 { margin: 2.75rem 0 0.75rem; padding-top: 1.1rem; border-top: 1px solid var(--rule);
+  font: 600 1.15rem/1.35 var(--sans); color: var(--accent); }
+main h2 + h3 { margin-top: 1.25rem; padding-top: 0; border-top: 0; }
+main h4, main h5, main h6 { margin: 1.75rem 0 0.5rem; font: 600 1rem/1.4 var(--sans); }
+main h5, main h6 { color: var(--muted); }
+main p, main ul, main ol { margin: 0 0 1rem; }
+main li { margin: 0.25rem 0; }
+main strong { font-weight: 650; }
+main blockquote { margin: 1.25rem 0; padding: 0.1rem 0 0.1rem 1rem; border-left: 3px solid var(--rule);
+  color: var(--muted); }
+main code { font: 0.88em/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  background: var(--wash); padding: 0.1em 0.3em; border-radius: 3px; }
+main pre { background: var(--wash); padding: 0.9rem 1rem; border-radius: 4px; overflow-x: auto; }
+main pre code { background: none; padding: 0; }
+main hr { width: 3rem; margin: 2rem auto; border: 0; border-top: 1px solid var(--rule); }
+
+.table { overflow-x: auto; margin: 0 0 1.25rem; }
+table { border-collapse: collapse; width: 100%; font: 0.86rem/1.45 var(--sans);
+  font-variant-numeric: tabular-nums; }
+th, td { padding: 0.45rem 0.7rem; text-align: left; vertical-align: top; border-bottom: 1px solid var(--rule); }
+th { font-weight: 600; border-bottom-color: var(--muted); }
+tbody tr:last-child td { border-bottom: 0; }
+
+@media (max-width: 34rem) {
+  body { font-size: 16px; }
+  .page { padding: 2rem 1rem 3rem; }
+  .masthead h1 { font-size: 2rem; }
+  .masthead .logo svg { height: 1.25rem; }
+  .run { grid-template-columns: 1fr; gap: 0 0; }
+  .run dd { margin-bottom: 0.45rem; }
+  .run .group { white-space: normal; }
+}
+@media print {
+  :root { --paper: #fff; --ink: #000; --muted: #444; --rule: #bbb; --accent: #000; --wash: #f2f2f2;
+    --edge: #bbb; --up: #087a59; --down: #b4372f; --level: #444; }
+  body { font-size: 11pt; }
+  .table { overflow: visible; }
+  .page { max-width: none; padding: 0; }
+  .contents, .to-top { display: none; }
+  main h2 { break-before: page; border-top: 0; margin-top: 0; }
+  main section:first-child h2 { break-before: auto; }
+  main h3, main h4 { break-after: avoid; }
+  a { color: inherit; text-decoration: none; }
+  table { break-inside: avoid; }
+}
+</style>
+</head>
+<body><!-- TARJA-AVISO --><style>
+.tarja-aviso{position:sticky;top:0;z-index:99;margin:0;padding:.7rem 1rem;background:#fff3cd;color:#5c4400;
+border-bottom:2px solid #e0a800;font:600 14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;text-align:center}
+.tarja-aviso small{display:block;font-weight:400;opacity:.85;margin-top:.15rem}
+@media (prefers-color-scheme:dark){.tarja-aviso{background:#3b2f00;color:#ffe9a6;border-bottom-color:#b88a00}}
+</style><div class="tarja-aviso" role="note">⚠ Experimento de pesquisa gerado por agentes de IA (modelos leves). Não é recomendação de investimento nem análise de valores mobiliários. Dados não verificados, podem estar incompletos ou errados. Decisões de investimento são de responsabilidade exclusiva do leitor.<small>Modelos: gemini-3.1-flash-lite / gemini-3.5-flash-lite · Gerado em: 06/10/2026 12:09</small></div>
+<div class="page" id="top">
+<header class="masthead">
+<a class="logo" href="https://tauric.ai" rel="noopener" aria-label="Tauric Research"><svg width="993" height="115" viewBox="0 0 993 115" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M189.86 95.0459V37.9779H165.924V29.9259H223.74V37.9779H199.804V95.0459H189.86ZM251.026 46.4259C256.071 46.4259 260.178 47.0272 263.345 48.2299C266.514 49.4032 268.89 51.3686 270.474 54.1259C272.058 56.8832 272.85 60.6379 272.85 65.3899V95.0459H264.666L263.961 89.8979H263.434C261.644 91.7752 259.386 93.2419 256.657 94.2979C253.929 95.3246 251.025 95.8379 247.946 95.8379C244.426 95.8379 241.419 95.2952 238.925 94.2099C236.432 93.0952 234.54 91.5406 233.249 89.5459C231.959 87.5512 231.313 85.2046 231.313 82.5059C231.313 78.2526 232.897 74.9672 236.065 72.6499C239.263 70.3032 244.337 68.8219 251.29 68.2059L263.258 67.0179V64.7299C263.258 61.9139 262.774 59.7139 261.806 58.1299C260.838 56.5459 259.371 55.4312 257.406 54.7859C255.47 54.1406 252.888 53.8179 249.662 53.8179C247.432 53.8179 245.012 54.0086 242.401 54.3899C239.82 54.7712 237.341 55.3432 234.965 56.1059V48.8019C237.312 48.0392 239.908 47.4526 242.754 47.0419C245.628 46.6312 248.386 46.4259 251.026 46.4259ZM250.541 89.0619C252.888 89.0619 255.162 88.6512 257.362 87.8299C259.562 86.9792 261.527 85.7179 263.258 84.0459V72.8259L252.038 73.9259C248.136 74.3659 245.35 75.2166 243.678 76.4779C242.005 77.7099 241.169 79.4699 241.169 81.7579C241.169 84.0752 241.947 85.8792 243.501 87.1699C245.056 88.4312 247.403 89.0619 250.541 89.0619ZM313.339 95.8379C307.59 95.8379 303.087 94.2979 299.831 91.2179C296.575 88.1086 294.947 83.2686 294.947 76.6979V47.1739H304.715V76.1699C304.715 80.1886 305.624 83.0779 307.443 84.8379C309.291 86.5979 311.916 87.4779 315.319 87.4779C317.871 87.4779 320.379 86.9939 322.843 86.0259C325.336 85.0286 327.492 83.5766 329.311 81.6699V47.1739H339.079V95.0459H330.983L330.367 89.9419H329.883C327.624 91.8486 325.072 93.3152 322.227 94.3419C319.382 95.3392 316.419 95.8379 313.339 95.8379ZM362.371 47.1739H370.423L371.171 53.2899H371.743C373.474 51.2072 375.703 49.5792 378.431 48.4059C381.188 47.2326 384.063 46.6459 387.055 46.6459C388.756 46.6459 390.355 46.7926 391.851 47.0859V55.8419C390.414 55.5779 388.654 55.4459 386.571 55.4459C383.99 55.4459 381.364 55.9446 378.695 56.9419C376.026 57.9392 373.84 59.4206 372.139 61.3859V95.0459H362.371V47.1739ZM409.069 95.0459V47.1739H418.837V95.0459H409.069ZM413.953 37.8459C411.871 37.8459 410.287 37.3912 409.201 36.4819C408.145 35.5726 407.617 34.2672 407.617 32.5659C407.617 30.8352 408.145 29.5152 409.201 28.6059C410.287 27.6672 411.871 27.1979 413.953 27.1979C416.036 27.1979 417.605 27.6672 418.661 28.6059C419.747 29.5152 420.289 30.8352 420.289 32.5659C420.289 34.2672 419.747 35.5726 418.661 36.4819C417.605 37.3912 416.036 37.8459 413.953 37.8459ZM464.85 95.9259C456.607 95.9259 450.315 93.8432 445.974 89.6779C441.662 85.5126 439.506 79.3526 439.506 71.1979C439.506 63.0139 441.779 56.8392 446.326 52.6739C450.902 48.5086 457.575 46.4259 466.346 46.4259C470.716 46.4259 474.735 46.9246 478.402 47.9219V55.7099C476.378 55.2406 474.486 54.8886 472.726 54.6539C470.966 54.4192 469.118 54.3019 467.182 54.3019C461.168 54.3019 456.71 55.6512 453.806 58.3499C450.931 61.0486 449.494 65.2872 449.494 71.0659C449.494 76.8739 450.858 81.1566 453.586 83.9139C456.343 86.6712 460.42 88.0499 465.818 88.0499C467.695 88.0499 469.616 87.8886 471.582 87.5659C473.547 87.2139 475.82 86.6712 478.402 85.9379V93.7259C474.236 95.1926 469.719 95.9259 464.85 95.9259ZM574.428 95.0459L553.704 69.0859C553.176 69.1152 552.37 69.1299 551.284 69.1299C548.38 69.1299 544.978 68.9832 541.076 68.6899V95.0459H531.308V31.4659C537.967 29.9699 544.846 29.2219 551.944 29.2219C561.595 29.2219 568.752 30.8059 573.416 33.9739C578.08 37.1126 580.412 42.1286 580.412 49.0219C580.412 54.0086 579.004 58.0859 576.188 61.2539C573.402 64.4219 569.266 66.6366 563.78 67.8979L585.648 95.0459H574.428ZM541.076 61.2099C543.071 61.4152 544.816 61.5619 546.312 61.6499C547.838 61.7379 549.627 61.7819 551.68 61.7819C558.427 61.7819 563.34 60.7699 566.42 58.7459C569.5 56.6926 571.04 53.4952 571.04 49.1539C571.04 46.0739 570.395 43.6099 569.104 41.7619C567.843 39.9139 565.863 38.5792 563.164 37.7579C560.495 36.9366 556.975 36.5259 552.604 36.5259C550.404 36.5259 548.424 36.6139 546.664 36.7899C544.904 36.9659 543.042 37.2299 541.076 37.5819V61.2099ZM642.947 74.0139H608.231C608.407 77.4752 609.155 80.2766 610.475 82.4179C611.795 84.5299 613.775 86.0846 616.415 87.0819C619.055 88.0792 622.443 88.5779 626.579 88.5779C630.686 88.5779 635.233 87.9472 640.219 86.6859V93.9459C635.027 95.2659 630.026 95.9259 625.215 95.9259C616.298 95.9259 609.61 93.9166 605.151 89.8979C600.722 85.8499 598.507 79.6166 598.507 71.1979C598.507 65.9179 599.402 61.4299 601.191 57.7339C602.981 54.0379 605.562 51.2366 608.935 49.3299C612.338 47.3939 616.43 46.4259 621.211 46.4259C628.251 46.4259 633.634 48.5819 637.359 52.8939C641.085 57.1766 642.947 63.3659 642.947 71.4619V74.0139ZM621.079 52.8939C616.973 52.8939 613.834 54.1406 611.663 56.6339C609.493 59.0979 608.334 62.9259 608.187 68.1179H633.751C633.634 62.9259 632.519 59.0979 630.407 56.6339C628.295 54.1406 625.186 52.8939 621.079 52.8939ZM677.365 95.9259C671.352 95.9259 665.896 95.2219 660.997 93.8139V86.7299C666.248 88.1966 671.718 88.9299 677.409 88.9299C681.809 88.9299 684.977 88.3432 686.913 87.1699C688.849 85.9672 689.817 84.2219 689.817 81.9339C689.817 80.7019 689.597 79.6899 689.157 78.8979C688.717 78.0766 687.969 77.4019 686.913 76.8739C685.857 76.3166 684.405 75.8912 682.557 75.5979L674.065 74.2779C669.137 73.4859 665.573 71.9899 663.373 69.7899C661.202 67.5899 660.117 64.6419 660.117 60.9459C660.117 56.4579 661.965 52.9232 665.661 50.3419C669.386 47.7312 675.062 46.4259 682.689 46.4259C685.094 46.4259 687.485 46.5872 689.861 46.9099C692.266 47.2032 694.481 47.6432 696.505 48.2299V55.2699C692.046 54.0379 687.456 53.4219 682.733 53.4219C677.893 53.4219 674.476 54.0526 672.481 55.3139C670.486 56.5752 669.489 58.3206 669.489 60.5499C669.489 62.2219 670.002 63.5859 671.029 64.6419C672.056 65.6686 673.889 66.4166 676.529 66.8859L685.021 68.2059C689.92 68.9686 693.513 70.3766 695.801 72.4299C698.089 74.4832 699.233 77.4606 699.233 81.3619C699.233 84.3832 698.412 86.9792 696.769 89.1499C695.156 91.3206 692.706 92.9926 689.421 94.1659C686.165 95.3392 682.146 95.9259 677.365 95.9259ZM760.579 74.0139H725.863C726.039 77.4752 726.787 80.2766 728.107 82.4179C729.427 84.5299 731.407 86.0846 734.047 87.0819C736.687 88.0792 740.075 88.5779 744.211 88.5779C748.317 88.5779 752.864 87.9472 757.851 86.6859V93.9459C752.659 95.2659 747.657 95.9259 742.847 95.9259C733.929 95.9259 727.241 93.9166 722.783 89.8979C718.353 85.8499 716.139 79.6166 716.139 71.1979C716.139 65.9179 717.033 61.4299 718.823 57.7339C720.612 54.0379 723.193 51.2366 726.567 49.3299C729.969 47.3939 734.061 46.4259 738.843 46.4259C745.883 46.4259 751.265 48.5819 754.991 52.8939C758.716 57.1766 760.579 63.3659 760.579 71.4619V74.0139ZM738.711 52.8939C734.604 52.8939 731.465 54.1406 729.295 56.6339C727.124 59.0979 725.965 62.9259 725.819 68.1179H751.383C751.265 62.9259 750.151 59.0979 748.039 56.6339C745.927 54.1406 742.817 52.8939 738.711 52.8939ZM796.986 46.4259C802.032 46.4259 806.138 47.0272 809.306 48.2299C812.474 49.4032 814.85 51.3686 816.434 54.1259C818.018 56.8832 818.81 60.6379 818.81 65.3899V95.0459H810.626L809.922 89.8979H809.394C807.605 91.7752 805.346 93.2419 802.618 94.2979C799.89 95.3246 796.986 95.8379 793.906 95.8379C790.386 95.8379 787.38 95.2952 784.886 94.2099C782.393 93.0952 780.501 91.5406 779.21 89.5459C777.92 87.5512 777.274 85.2046 777.274 82.5059C777.274 78.2526 778.858 74.9672 782.026 72.6499C785.224 70.3032 790.298 68.8219 797.25 68.2059L809.218 67.0179V64.7299C809.218 61.9139 808.734 59.7139 807.766 58.1299C806.798 56.5459 805.332 55.4312 803.366 54.7859C801.43 54.1406 798.849 53.8179 795.622 53.8179C793.393 53.8179 790.973 54.0086 788.362 54.3899C785.781 54.7712 783.302 55.3432 780.926 56.1059V48.8019C783.273 48.0392 785.869 47.4526 788.714 47.0419C791.589 46.6312 794.346 46.4259 796.986 46.4259ZM796.502 89.0619C798.849 89.0619 801.122 88.6512 803.322 87.8299C805.522 86.9792 807.488 85.7179 809.218 84.0459V72.8259L797.998 73.9259C794.097 74.3659 791.31 75.2166 789.638 76.4779C787.966 77.7099 787.13 79.4699 787.13 81.7579C787.13 84.0752 787.908 85.8792 789.462 87.1699C791.017 88.4312 793.364 89.0619 796.502 89.0619ZM841.524 47.1739H849.576L850.324 53.2899H850.896C852.627 51.2072 854.856 49.5792 857.584 48.4059C860.341 47.2326 863.216 46.6459 866.208 46.6459C867.909 46.6459 869.508 46.7926 871.004 47.0859V55.8419C869.567 55.5779 867.807 55.4459 865.724 55.4459C863.143 55.4459 860.517 55.9446 857.848 56.9419C855.179 57.9392 852.993 59.4206 851.292 61.3859V95.0459H841.524V47.1739ZM909.164 95.9259C900.921 95.9259 894.629 93.8432 890.288 89.6779C885.976 85.5126 883.82 79.3526 883.82 71.1979C883.82 63.0139 886.093 56.8392 890.64 52.6739C895.216 48.5086 901.889 46.4259 910.66 46.4259C915.03 46.4259 919.049 46.9246 922.716 47.9219V55.7099C920.692 55.2406 918.8 54.8886 917.04 54.6539C915.28 54.4192 913.432 54.3019 911.496 54.3019C905.482 54.3019 901.024 55.6512 898.12 58.3499C895.245 61.0486 893.808 65.2872 893.808 71.0659C893.808 76.8739 895.172 81.1566 897.9 83.9139C900.657 86.6712 904.734 88.0499 910.132 88.0499C912.009 88.0499 913.93 87.8886 915.896 87.5659C917.861 87.2139 920.134 86.6712 922.716 85.9379V93.7259C918.55 95.1926 914.033 95.9259 909.164 95.9259ZM941.796 23.9419H951.564V52.2779H952.048C954.248 50.3712 956.756 48.9192 959.572 47.9219C962.417 46.9246 965.395 46.4259 968.504 46.4259C974.019 46.4259 978.375 47.9952 981.572 51.1339C984.769 54.2432 986.368 59.0686 986.368 65.6099V95.0459H976.6V66.0939C976.6 62.0459 975.661 59.1566 973.784 57.4259C971.936 55.6952 969.237 54.8299 965.688 54.8299C963.048 54.8299 960.481 55.3286 957.988 56.3259C955.524 57.2939 953.383 58.7312 951.564 60.6379V95.0459H941.796V23.9419Z" fill="#14C290"/>
+<rect x="0.205322" y="14.873" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="43.1211" y="29.1787" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect y="29.1787" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="14.679" y="29.1787" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="14.679" y="44.0371" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="29.3579" y="29.1787" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="29.3579" y="44.0371" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="71.9265" y="29.1787" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="71.9265" y="44.0371" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="57.2478" y="29.1787" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="86.6055" y="29.1787" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="86.6055" y="44.0371" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="101.284" y="29.1787" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="29.3579" y="58.7158" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="71.9265" y="58.7158" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="43.1211" y="87.1592" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="57.2478" y="87.1592" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="29.3579" y="73.0205" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="71.9265" y="73.0205" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="29.3579" y="87.3262" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="71.9265" y="87.3262" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="43.1211" y="101.631" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="57.2478" y="101.631" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="101.284" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="15.0187" y="15.213" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="29.6979" y="15.213" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="43.4611" y="15.213" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="57.5876" y="15.213" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="43.4611" y="44.3771" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="0.34" y="44.3771" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="57.5876" y="44.3771" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="101.624" y="44.3771" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="43.4611" y="59.0558" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="57.5876" y="59.0558" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="0.34" y="59.0558" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="15.0187" y="59.0558" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="86.9455" y="59.0558" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="101.624" y="59.0558" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="43.4611" y="73.3605" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="57.5876" y="73.3605" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="0.34" y="73.3605" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="15.0187" y="73.3605" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="86.9455" y="73.3605" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="101.624" y="73.3605" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="0.34" y="87.6662" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="15.0187" y="87.6662" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="86.9455" y="87.6662" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="101.624" y="87.6662" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="0.34" y="101.971" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="15.0187" y="101.971" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="29.6979" y="101.971" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="72.2668" y="101.971" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="86.9455" y="101.971" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="101.624" y="101.971" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="43.4611" y="0.34" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="57.5876" y="0.34" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="15.0187" y="0.34" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="29.6979" y="0.34" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="72.2668" y="0.34" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="86.9455" y="0.34" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="72.445" y="15.213" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="86.7506" y="15.213" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="100.716" y="14.873" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+</svg></a>
+<h1><span class="ticker">MP</span> <span class="rating down">Underweight</span></h1>
+<p class="date">Analysis of 2026-10-05</p>
+<dl class="run"><div class="detail"><dt>Generated</dt><dd>2026-10-06 12:09</dd></div><div class="detail"><dt>Deep model</dt><dd><span class="field">google</span> <span class="field">gemini-3.5-flash-lite</span></dd></div><div class="detail"><dt>Quick model</dt><dd><span class="field">google</span> <span class="field">gemini-3.1-flash-lite</span></dd></div><div class="detail"><dt>Analysts</dt><dd><span class="field">market</span> <span class="field">news</span> <span class="field">fundamentals</span></dd></div><div class="detail"><dt>Debate rounds</dt><dd><span class="group"><span class="name">research</span><span class="field">1</span></span> <span class="group"><span class="name">risk</span><span class="field">1</span></span></dd></div><div class="detail"><dt>Data vendors</dt><dd><span class="group"><span class="name">Prices</span><span class="field">yfinance</span></span> <span class="group"><span class="name">Indicators</span><span class="field">yfinance</span></span> <span class="group"><span class="name">Fundamentals</span><span class="field">sec_edgar</span> <span class="then">→</span> <span class="field">yfinance</span></span> <span class="group"><span class="name">News</span><span class="field">yfinance</span></span> <span class="group"><span class="name">Macro</span><span class="field">fred</span></span> <span class="group"><span class="name">Prediction markets</span><span class="field">polymarket</span></span></dd></div><div class="detail"><dt>Version</dt><dd>TradingAgents 0.6.0</dd></div></dl>
+</header>
+<nav class="contents" aria-label="Sections"><ul><li><a href="#s1"><span class="num">I</span> <span class="label">Analyst Team Reports</span></a><ul><li><a href="#s1-1"><span class="bar"></span> <span class="label">Market Analyst</span></a></li><li><a href="#s1-2"><span class="bar"></span> <span class="label">News Analyst</span></a></li><li><a href="#s1-3"><span class="bar"></span> <span class="label">Fundamentals Analyst</span></a></li></ul></li><li><a href="#s2"><span class="num">II</span> <span class="label">Research Team Decision</span></a><ul><li><a href="#s2-1"><span class="bar"></span> <span class="label">Bull Researcher</span></a></li><li><a href="#s2-2"><span class="bar"></span> <span class="label">Bear Researcher</span></a></li><li><a href="#s2-3"><span class="bar"></span> <span class="label">Research Manager</span></a></li></ul></li><li><a href="#s3"><span class="num">III</span> <span class="label">Trading Team Plan</span></a><ul><li><a href="#s3-1"><span class="bar"></span> <span class="label">Trader</span></a></li></ul></li><li><a href="#s4"><span class="num">IV</span> <span class="label">Risk Management Team Decision</span></a><ul><li><a href="#s4-1"><span class="bar"></span> <span class="label">Aggressive Analyst</span></a></li><li><a href="#s4-2"><span class="bar"></span> <span class="label">Conservative Analyst</span></a></li><li><a href="#s4-3"><span class="bar"></span> <span class="label">Neutral Analyst</span></a></li></ul></li><li><a href="#s5"><span class="num">V</span> <span class="label">Portfolio Manager Decision</span></a><ul><li><a href="#s5-1"><span class="bar"></span> <span class="label">Portfolio Manager</span></a></li></ul></li></ul></nav>
+<main>
+<section id="s1"><h2>I. Analyst Team Reports</h2><h3 id="s1-1">Market Analyst</h3>
+<p>A análise técnica da <strong>MP Materials Corp. (MP)</strong> em 5 de outubro de 2026 revela um cenário de tendência de baixa persistente e pressão vendedora contínua.</p>
+<h6>Análise de Tendência e Momentum</h6>
+<ol>
+<li><strong>Estrutura de Médias Móveis:</strong> O preço de fechamento atual de <strong>$46,84</strong> encontra-se significativamente abaixo da média móvel de 50 dias (<strong>$51,13</strong>) e da média móvel de 200 dias (<strong>$56,68</strong>). Esse alinhamento indica uma tendência de baixa de longo e médio prazo consolidada.</li>
+<li><strong>Momentum (RSI e MACD):</strong> O <strong>RSI (41,32)</strong> está em zona neutra, mas inclinando-se para o território de sobrevenda, sugerindo que, embora a pressão vendedora domine, o movimento não está em estado de exaustão extrema de curto prazo. O <strong>MACD (-1,74)</strong> abaixo da linha de sinal (-1,51) confirma a dominância do momentum de baixa, com o histograma negativo (-0,22) indicando que a força dos vendedores permanece ativa.</li>
+<li><strong>Bandas de Bollinger e Volatilidade:</strong> O preço encontra-se abaixo da banda média de 20 dias (<strong>$49,21</strong>), oscilando na metade inferior do canal de volatilidade definido pelas Bandas de Bollinger (entre <strong>$44,05</strong> e <strong>$54,36</strong>). O <strong>ATR de 2,48</strong> reflete a volatilidade atual do ativo, servindo como um parâmetro útil para definir stop-losses em estratégias de acompanhamento de tendência.</li>
+</ol>
+<h6>Insights Estratégicos</h6>
+<p>O ativo apresenta uma configuração técnica fraca. A incapacidade de sustentar preços acima das médias móveis indica que as tentativas de recuperação enfrentam resistência imediata. O suporte próximo é definido pela Banda de Bollinger inferior (<strong>$44,05</strong>). Uma reversão significativa dependeria de um fechamento sustentado acima da média móvel de 50 dias, o que parece improvável sob as condições atuais de momentum negativo.</p>
+<h6>Resumo Técnico</h6>
+<div class="table"><table>
+<thead>
+<tr>
+<th style="text-align:left">Indicador</th>
+<th style="text-align:left">Valor Atual</th>
+<th style="text-align:left">Interpretação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Close</strong></td>
+<td style="text-align:left">$46,84</td>
+<td style="text-align:left">Baixa</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Close 50 SMA</strong></td>
+<td style="text-align:left">$51,13</td>
+<td style="text-align:left">Tendência de Baixa</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Close 200 SMA</strong></td>
+<td style="text-align:left">$56,68</td>
+<td style="text-align:left">Tendência de Baixa (Longo Prazo)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>RSI</strong></td>
+<td style="text-align:left">41,32</td>
+<td style="text-align:left">Neutro/Inclinado para Baixa</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>MACD</strong></td>
+<td style="text-align:left">-1,74</td>
+<td style="text-align:left">Momentum Negativo</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>ATR</strong></td>
+<td style="text-align:left">2,48</td>
+<td style="text-align:left">Volatilidade Moderada</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Boll (Média)</strong></td>
+<td style="text-align:left">49,21</td>
+<td style="text-align:left">Resistência Dinâmica</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Rating</strong>: Underweight</p>
+<p>FINAL TRANSACTION PROPOSAL: Devido à tendência de baixa de longo prazo (preço abaixo da SMA 200) e ao momentum negativo confirmado pelo MACD, recomenda-se cautela ou posições curtas, aguardando um sinal de exaustão ou mudança de estrutura para considerar posições longas.</p>
+<h3 id="s1-2">News Analyst</h3>
+<p>O relatório a seguir resume o panorama atual para a <strong>MP Materials Corp. (MP)</strong>, com base em desenvolvimentos corporativos e condições macroeconômicas observadas até 5 de outubro de 2026.</p>
+<h6>Análise da MP Materials (MP)</h6>
+<p>A <strong>MP</strong> encontra-se em um momento crucial de transição operacional. Recentemente, a empresa tem sido o foco de atenção devido ao seu papel estratégico na cadeia de suprimentos de minerais críticos dos EUA, especificamente após o progresso no seu campus de ímãs no Texas e o suporte financeiro do Pentágono para reduzir a dependência da China.</p>
+<p><strong>Pontos-chave:</strong></p>
+<ul>
+<li><strong>Catalisadores Estratégicos:</strong> A entrega iminente dos primeiros ímãs de terras raras para a General Motors que não são produzidos na China é um marco fundamental que valida a tese de investimento da empresa como um ativo de segurança nacional.</li>
+<li><strong>Volatilidade e Sentimento:</strong> Apesar do otimismo sobre o campus no Texas, a ação tem enfrentado pressão significativa, com quedas recentes relatadas. O sentimento dos investidores parece estar dividido entre o valor a longo prazo do suporte governamental e preocupações com a execução operacional e a realidade econômica dos preços das commodities.</li>
+<li><strong>Ruído de Mercado:</strong> Houve especulação infundada ligando a <strong>MP</strong> a acordos na Groenlândia, o que gera ruído. É essencial separar o valor fundamental do projeto nos EUA de movimentos especulativos.</li>
+</ul>
+<h6>Panorama Macroeconômico Global</h6>
+<p>O cenário macroeconômico atual é definido pela resiliência do setor tecnológico, apesar das taxas de juros elevadas, que continuam pressionando outros setores, como o de consumo discricionário. O mercado de ações demonstra uma resistência notável, mantendo recordes, mesmo com os alertas persistentes de especialistas sobre os danos que as taxas de juros elevadas podem causar na economia real.</p>
+<p><strong>Insights para Traders:</strong></p>
+<ul>
+<li><strong>Ambiente de Juros:</strong> A manutenção de taxas elevadas atua como um vento contrário para empresas de capital intensivo, como a <strong>MP</strong>, aumentando o custo de capital para expansões.</li>
+<li><strong>Foco Estratégico:</strong> A alocação de capital da <strong>MP</strong> para a produção doméstica de ímãs coloca a empresa em uma posição privilegiada frente a potenciais incentivos governamentais, o que pode mitigar o risco macroeconômico a longo prazo.</li>
+</ul>
+<h6>Resumo das Informações</h6>
+<div class="table"><table>
+<thead>
+<tr>
+<th style="text-align:left">Categoria</th>
+<th style="text-align:left">Observação Chave</th>
+<th style="text-align:left">Impacto para MP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Operacional</strong></td>
+<td style="text-align:left">Entrega de ímãs para a GM (fora da China).</td>
+<td style="text-align:left">Altamente Positivo (Validação)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Setorial</strong></td>
+<td style="text-align:left">Expansão do hub de terras raras no Texas.</td>
+<td style="text-align:left">Positivo (Crescimento)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Macro</strong></td>
+<td style="text-align:left">Juros elevados impactando o custo de capital.</td>
+<td style="text-align:left">Negativo (Risco de financiamento)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Sentimento</strong></td>
+<td style="text-align:left">Alta volatilidade e correções recentes.</td>
+<td style="text-align:left">Neutro (Atenção a pontos de entrada)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Rating</strong>: Neutral
+FINAL TRANSACTION PROPOSAL: Monitorar a execução da entrega dos ímãs para a GM. A volatilidade atual da MP oferece uma oportunidade para acumulação em níveis de suporte técnico, dada a sua importância estratégica na cadeia de suprimentos dos EUA, contanto que o investidor esteja ciente dos riscos de um ambiente de juros altos persistentes.</p>
+<h3 id="s1-3">Fundamentals Analyst</h3>
+<p>Este relatório apresenta uma análise fundamentalista da <strong>MP Materials Corp. (MP)</strong>, com base nos dados financeiros reportados até 5 de outubro de 2026.</p>
+<h6>Análise Financeira e Operacional</h6>
+<p>A MP Materials, principal produtora de terras raras nos Estados Unidos, enfrenta um cenário desafiador nos últimos dois anos. A empresa, que teve um pico de desempenho financeiro notável em 2021 e 2022, tem lutado para manter a rentabilidade em um mercado caracterizado pela volatilidade dos preços das commodities.</p>
+<h6>1. Desempenho Operacional e Rentabilidade</h6>
+<ul>
+<li><strong>Receita:</strong> Após atingir um pico em 2022 (US$ 528 milhões), a receita da empresa recuou para US$ 224 milhões em 2025.</li>
+<li><strong>Resultado Líquido:</strong> O lucro operacional e o lucro líquido tornaram-se negativos a partir de 2023, com uma piora consecutiva em 2024 e 2025 (US$ -86 milhões em 2025). Isso reflete a pressão nos preços de venda dos produtos de terras raras e custos operacionais elevados.</li>
+</ul>
+<h6>2. Posição Patrimonial e Liquidez</h6>
+<ul>
+<li><strong>Ativos e Caixa:</strong> A empresa demonstrou um aumento significativo no total de ativos em 2025 (US$ 3,86 bilhões, comparado a US$ 2,33 bilhões em 2024), acompanhado por um salto no caixa e equivalentes (US$ 1,16 bilhão). Isso sugere uma captação de recursos bem-sucedida ou reestruturação financeira, dado que o <em>Financing Cash Flow</em> também disparou em 2025 (US$ 1,24 bilhão).</li>
+<li><strong>Endividamento:</strong> Embora as obrigações totais (Total Liabilities) tenham subido, a posição de caixa é robusta, fornecendo um amortecedor de curto prazo para a queima de caixa operacional (-US$ 156 milhões em 2025).</li>
+</ul>
+<h6>3. Investimentos (CAPEX)</h6>
+<ul>
+<li>A empresa manteve um nível constante de investimentos em capital (<em>Capital Expenditure</em>) entre US$ 170 e 327 milhões anualmente, demonstrando o compromisso contínuo com a expansão de sua infraestrutura crítica e processamento doméstico, essencial para sua tese de investimento estratégica.</li>
+</ul>
+<h6>Insights para Traders</h6>
+<ol>
+<li><strong>Cuidado com a Volatilidade:</strong> A transição da empresa de uma fase de lucros elevados para prejuízos operacionais sugere que a MP Materials está altamente exposta aos ciclos das commodities.</li>
+<li><strong>Solidez Financeira vs. Resultados:</strong> Embora a empresa tenha injetado capital, a falta de rentabilidade operacional precisa ser monitorada de perto nos próximos trimestres. A capacidade de gerar fluxo de caixa operacional positivo será o indicador mais importante para a recuperação das ações.</li>
+<li><strong>Perspectiva Estratégica:</strong> A MP Materials permanece como um ativo estratégico para a cadeia de suprimentos dos EUA, o que pode mitigar riscos de longo prazo, mas o momento técnico atual é de cautela devido ao desempenho financeiro recente.</li>
+</ol>
+<h6>Tabela Resumo (valores em milhões de USD)</h6>
+<div class="table"><table>
+<thead>
+<tr>
+<th style="text-align:left">Métrica</th>
+<th style="text-align:center">2023</th>
+<th style="text-align:center">2024</th>
+<th style="text-align:center">2025</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Receita</strong></td>
+<td style="text-align:center">253</td>
+<td style="text-align:center">204</td>
+<td style="text-align:center">224</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Resultado Líquido</strong></td>
+<td style="text-align:center">24</td>
+<td style="text-align:center">-65</td>
+<td style="text-align:center">-86</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Caixa e Equivalentes</strong></td>
+<td style="text-align:center">263</td>
+<td style="text-align:center">282</td>
+<td style="text-align:center">1.166</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Capital Expenditure</strong></td>
+<td style="text-align:center">262</td>
+<td style="text-align:center">186</td>
+<td style="text-align:center">172</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Operating Cash Flow</strong></td>
+<td style="text-align:center">63</td>
+<td style="text-align:center">13</td>
+<td style="text-align:center">-156</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Rating</strong>: Neutral</p>
+<p>FINAL TRANSACTION PROPOSAL: Hold (Manter posições atuais e aguardar sinais de reversão no lucro operacional antes de aumentar a exposição).</p>
+</section><section id="s2"><h2>II. Research Team Decision</h2><h3 id="s2-1">Bull Researcher</h3>
+<p>Bull Analyst: Como analista focado no potencial de crescimento a longo prazo, discordo respeitosamente da visão de que a <code>MP</code> deve ser tratada apenas através das lentes da volatilidade técnica de curto prazo. Se olharmos além do ruído dos gráficos, veremos uma empresa que não é apenas uma mineradora, mas um pilar da segurança industrial dos EUA.</p>
+<p>Aqui está o porquê de a <code>MP</code> ser, na verdade, uma oportunidade de valor assimétrico neste momento:</p>
+<h6>1. A Tese do &quot;Ativo de Segurança Nacional&quot;</h6>
+<p>O mercado está excessivamente focado no &quot;lucro operacional negativo&quot; de 2025 e ignorando o valor estratégico incomparável. A <code>MP</code> não está apenas extraindo terras raras; ela está construindo, em solo americano, a única cadeia de suprimentos integrada de ímãs permanente de ponta a ponta fora da esfera de influência chinesa. O marco da entrega para a General Motors não é apenas um &quot;negócio&quot;; é a validação de que a <code>MP</code> é o parceiro preferencial para a transição energética global. Quando o Pentágono e montadoras globais dependem de você para a soberania tecnológica, o &quot;custo de capital&quot; deixa de ser apenas uma despesa financeira e passa a ser um investimento com suporte governamental implícito.</p>
+<h6>2. O Equívoco dos &quot;Prejuízos&quot;</h6>
+<p>Os ursos apontam para a queima de caixa operacional (-US$ 156 milhões em 2025) como sinal de fraqueza. Eu vejo isso como o <strong>ápice do investimento estratégico</strong>. A <code>MP</code> está finalizando seu campus no Texas. Estamos falando de um CAPEX constante e disciplinado (US$ 172 milhões em 2025) que está criando uma barreira de entrada intransponível para competidores. Ter US$ 1,16 bilhão em caixa e equivalentes não é um detalhe — é uma fortaleza que permite à empresa atravessar o ciclo de baixa das commodities sem necessidade de diluir o acionista.</p>
+<h6>3. Respondendo ao Bear: Por que o &quot;Underweight&quot; é uma miopia?</h6>
+<p>O analista bear baseia sua recomendação técnica no fato de o preço estar abaixo das médias móveis. Ora, investir em líderes de mercado na base da curva é precisamente o que gera retornos de <em>alpha</em>. Se esperarmos o rompimento da média de 200 dias (a confirmação técnica), já teremos perdido o desconto oferecido pelo atual pessimismo do mercado. O RSI inclinado para o território de sobrevenda, citado pelo bear como sinal de fraqueza, é para um investidor de valor um sinal clássico de que o ativo está sendo precificado como uma commodity comum, quando deveria ser precificado como um ativo de infraestrutura tecnológica.</p>
+<h6>Por que a <code>MP</code> vai superar as expectativas:</h6>
+<ul>
+<li><strong>Escalabilidade:</strong> Uma vez que o hub no Texas esteja operando em plena capacidade, a margem bruta da <code>MP</code> deixará de depender apenas do preço da rocha bruta e passará a ser impulsionada pelo valor agregado dos ímãs de alta tecnologia.</li>
+<li><strong>Independência:</strong> A pressão por cadeias de suprimentos &quot;China-free&quot; é um vento de cauda secular, não uma tendência de mercado passageira.</li>
+</ul>
+<p>Estamos diante de uma empresa que possui a infraestrutura, o capital e o apoio geopolítico. O preço de US$ 46,84 é um ponto de entrada para quem compreende que a <code>MP</code> é a única que consegue, de fato, entregar a promessa da transição energética americana. Enquanto o mercado teme a volatilidade, o investidor inteligente acumula a independência estratégica.</p>
+<p><strong>Rating</strong>: Buy</p>
+<p>FINAL TRANSACTION PROPOSAL: Recomendo a acumulação gradual de posições em <code>MP</code> nos níveis atuais de suporte, aproveitando a descorrelação entre o valor estratégico da empresa e o pessimismo temporário de curto prazo do setor de commodities. O foco deve ser a execução da entrega dos ímãs à GM, que servirá como o próximo grande catalisador de valorização.</p>
+<h3 id="s2-2">Bear Researcher</h3>
+<p>Bear Analyst: Colega, aprecio o seu entusiasmo e a sua narrativa sobre &quot;segurança nacional&quot;, mas, como analista focado em fatos e fundamentos, vejo um perigo real em confundir <strong>relevância geopolítica</strong> com <strong>viabilidade financeira</strong>. O mercado não precifica intenções; ele precifica resultados, e os resultados da <code>MP</code> estão longe de justificar o otimismo que você propõe.</p>
+<p>Aqui está por que a sua tese de &quot;valor assimétrico&quot; parece, na verdade, uma aposta de alto risco em um mercado que pune a ineficiência operacional:</p>
+<h6>1. A Falácia do &quot;Suporte Governamental&quot;</h6>
+<p>Você cita o suporte do Pentágono como um escudo, mas esse &quot;apoio&quot; não paga boletos nem substitui a necessidade de margens operacionais positivas. A história dos mercados está repleta de empresas &quot;estratégicas&quot; que consumiram montantes massivos de capital e diluíram acionistas ou colapsaram quando a realidade da oferta e demanda de commodities se impôs. O fato de a receita ter recuado de US$ 528 milhões (2022) para US$ 224 milhões (2025) mostra que a <code>MP</code> não tem poder de precificação. Ela é uma &quot;tomadora de preços&quot; em um mercado volátil, e nenhuma narrativa de segurança nacional altera o preço global do neodímio.</p>
+<h6>2. O Risco de Execução vs. &quot;Barreira de Entrada&quot;</h6>
+<p>Você chama a queima de caixa operacional (-US$ 156 milhões) de &quot;ápice do investimento estratégico&quot;. Eu chamo de <strong>risco operacional severo</strong>. O campus no Texas é, sim, uma tentativa de verticalização, mas verticalização sem lucro operacional é apenas um aumento nos custos fixos. A <code>MP</code> está tentando mudar seu modelo de negócio no meio de um inverno de preços de commodities, o que é financeiramente perigoso. Manter um caixa robusto de US$ 1,16 bilhão é prudente, mas o <em>burn rate</em> operacional sugere que esse capital não é um &quot;colchão de segurança&quot;, mas sim o que está mantendo as luzes acesas enquanto a empresa luta para provar que pode ser lucrativa fora da extração bruta.</p>
+<h6>3. Refutando a &quot;Miopia&quot; Técnica</h6>
+<p>Você diz que o rompimento da média de 200 dias é um sinal de &quot;esperar demais&quot;. Na verdade, é a confirmação de que os grandes investidores institucionais — que possuem informações muito mais precisas do que nós — estão saindo ou evitando o papel. O RSI e o MACD não mentem sobre o momentum: não há força compradora sustentada. Tentar &quot;pegar uma faca caindo&quot; sob a premissa de que o mercado está &quot;errado&quot; é uma estratégia que costuma levar a perdas acentuadas. O mercado está precificando a <code>MP</code> como a commodity que ela ainda produz majoritariamente, e até que os ímãs de alto valor agregado representem uma fatia relevante e lucrativa do balanço, essa precificação é a única racional.</p>
+<h6>O Ponto Crítico</h6>
+<p>A General Motors é um grande nome, mas uma única entrega não reverte uma tendência de prejuízo líquido consecutivo desde 2023. O investidor inteligente não compra uma empresa pelo que ela <em>espera</em> ser daqui a cinco anos se, no presente, ela perde dinheiro a cada trimestre. O custo de oportunidade de alocar capital na <code>MP</code> enquanto o setor de tecnologia e outras áreas da economia oferecem retornos tangíveis é, na minha visão, extremamente alto.</p>
+<p>Não estamos ignorando a estratégia; estamos sendo realistas quanto à execução. Enquanto a empresa não apresentar uma virada clara para o lucro operacional, o risco de que o capital de giro seja corroído por despesas operacionais elevadas é uma ameaça real que você parece estar negligenciando.</p>
+<p><strong>Rating</strong>: Underweight</p>
+<p>FINAL TRANSACTION PROPOSAL: Recomendo a manutenção de posições curtas ou a saída total do ativo. A ausência de lucratividade operacional e a tendência técnica de baixa indicam que o risco de desvalorização adicional supera qualquer potencial de upside estratégico no curto e médio prazo. Aguardar por resultados que comprovem a margem de lucro dos produtos processados antes de qualquer reconsideração.</p>
+<h3 id="s2-3">Research Manager</h3>
+<p><strong>Recommendation</strong>: Hold</p>
+<p><strong>Rationale</strong>: A discussão entre o analista bull e o analista bear expõe um conflito clássico entre o valor estratégico a longo prazo e a realidade operacional de curto prazo. O bull destaca com razão o papel vital da MP como um pilar de segurança industrial dos EUA, o forte caixa de US$ 1,16 bilhão e o potencial do campus no Texas com a parceria da General Motors. Por outro lado, o bear aponta de forma contundente para a queda de receita, o prejuízo operacional (-US$ 156 milhões em 2025) e o momentum técnico desfavorável. Como a empresa está em uma fase de transição de alto CAPEX sem margens operacionais positivas comprovadas nos produtos de alta tecnologia, os riscos de execução pesam tanto quanto o valor estratégico. Diante de fundamentos e argumentos igualmente fortes e equilibrados em direções opostas, a evidência atual não justifica uma postura agressiva de compra ou de venda imediata, tornando a recomendação de Hold a mais prudente.</p>
+<p><strong>Strategic Actions</strong>: Recomendo manter a alocação atual em MP sem realizar novas compras ou vendas, mantendo o tamanho padrão da posição. O trader deve monitorar estritamente o fluxo de caixa, a queima de capital e os próximos relatórios de entrega de ímãs para a GM, aguardando sinais concretos de reversão nas margens operacionais antes de qualquer alteração de rumo.</p>
+</section><section id="s3"><h2>III. Trading Team Plan</h2><h3 id="s3-1">Trader</h3>
+<p><strong>Action</strong>: Sell</p>
+<p><strong>Reasoning</strong>: A recomendação de 'Underweight' do relatório técnico, combinada com o preço atual de 46,84 significativamente abaixo das médias móveis de 50 e 200 dias, indica uma tendência de baixa consolidada. Com o MACD negativo e a ausência de sinais de reversão, a estrutura técnica sugere risco contínuo de queda em direção ao suporte da banda inferior de Bollinger.</p>
+<p><strong>Entry Price</strong>: 46.84</p>
+<p><strong>Stop Loss</strong>: 51.13</p>
+<p><strong>Position Sizing</strong>: 2% do portfólio</p>
+<p>FINAL TRANSACTION PROPOSAL: <strong>SELL</strong></p>
+</section><section id="s4"><h2>IV. Risk Management Team Decision</h2><h3 id="s4-1">Aggressive Analyst</h3>
+<p>Aggressive Analyst: Escutem bem, porque enquanto vocês estão ocupados contando moedas e olhando para o retrovisor, o mercado está prestes a deixar vocês para trás. A cautela que vocês pregam não é prudência, é paralisia. O relatório técnico que vocês citam como &quot;Underweight&quot; é exatamente o combustível para uma oportunidade de curto prazo agressiva, e a &quot;Neutralidade&quot; sobre os fundamentos ignora completamente o valor estratégico monumental da MP Materials Corp. (MP).</p>
+<p>Ao analista técnico, digo o seguinte: vocês estão obcecados com médias móveis de 50 e 200 dias. Sim, o preço está abaixo, e daí? Isso não é um sinal de morte; é um desconto de mercado para quem tem estômago. O fato de o RSI estar em zona neutra e não sobrevendida prova que ainda há muito espaço para uma capitulação rápida ou uma reversão explosiva. Operar vendido (Sell) agora, com o ativo já comprimido nas Bandas de Bollinger, é aproveitar a inércia do movimento de queda para capitalizar sobre a volatilidade. O suporte de 44,05 não é um limite, é um alvo de lucro para a minha posição vendida. Esperar uma confirmação de reversão é perder o &quot;sweet spot&quot; da volatilidade que o ATR de 2,48 oferece.</p>
+<p>Já para o analista neutro, parem de tratar o balanço patrimonial como se fosse um livro de história. Vocês focam no prejuízo operacional de 2025, mas ignoram deliberadamente que a MP saltou para 1,1 bilhão em caixa. Em um ambiente de juros altos, ter liquidez é ser rei. Eles não estão &quot;queimando caixa&quot; sem propósito; eles estão construindo um campus no Texas que é, por definição, um ativo de segurança nacional financiado pelo Pentágono. A entrega dos ímãs para a General Motors não é um detalhe, é a validação de uma tecnologia que tira o domínio chinês da equação. Vocês chamam de &quot;risco de execução&quot;, eu chamo de &quot;barreira de entrada competitiva&quot;.</p>
+<p>Se vocês querem esperar o &quot;lucro operacional positivo&quot; para agir, parabéns, vocês vão comprar a ação quando ela já tiver subido 40% e o momento de ouro tiver passado. O mercado não premia quem espera o consenso; ele premia quem antecipa a transição. Vender agora, posicionando-se contra a estrutura técnica de baixa enquanto o mercado hesita sobre o valor estratégico da empresa, é a jogada mais inteligente para capturar o movimento de exaustão. O risco de 2% do portfólio é um preço irrisório pela assimetria de ganhar com a pressão vendedora em um ativo que o mercado ainda não entendeu como precificar.</p>
+<p>A cautela de vocês é o que mantém o investidor médio na mediocridade. Eu prefiro a volatilidade, o risco e a margem bruta de uma posição vendedora estratégica.</p>
+<p><strong>Rating</strong>: Underweight</p>
+<p>FINAL TRANSACTION PROPOSAL: <strong>SELL</strong></p>
+<h3 id="s4-2">Conservative Analyst</h3>
+<p>Conservative Analyst: Como Analista de Risco Conservador, meu dever é proteger o capital da firma contra o entusiasmo excessivo que frequentemente precede correções severas. Vejo com preocupação a sugestão do Analista Agressivo de &quot;aproveitar a inércia&quot;. O que ele chama de &quot;desconto de mercado&quot;, eu chamo de risco de captura de faca caindo.</p>
+<p>Ao Analista Agressivo: você sugere vender agora, aproveitando a tendência de baixa. Embora concorde com o diagnóstico técnico de que o momentum é negativo, a sua estratégia de entrar em uma posição vendida enquanto a empresa detém 1,16 bilhão de dólares em caixa — um colchão de liquidez formidável — é imprudente. Se houver um anúncio súbito de suporte governamental adicional ou uma aceleração nos contratos de defesa, um &quot;short squeeze&quot; pode dizimar sua posição de 2%. Você está ignorando que o ativo está sendo negociado em um nível de suporte psicológico próximo à banda inferior de Bollinger. O risco de &quot;gap up&quot; em ativos estratégicos é real, e vender a descoberto um ativo de segurança nacional no meio de uma transição operacional é um risco assimétrico que a firma não deve correr.</p>
+<p>Ao Analista Neutro, que defende a acumulação: o seu otimismo ignora a realidade contábil. A empresa queimou 156 milhões de dólares em fluxo de caixa operacional em 2025. O fato de terem 1,1 bilhão em caixa não é apenas um sinal de &quot;força&quot;, mas um sinal de que a empresa precisou captar recursos massivos para sobreviver, o que dilui o valor para o acionista. Em um ambiente de juros altos, esse capital alocado em CAPEX (172 milhões) é extremamente caro. Apostar na tese de &quot;segurança nacional&quot; enquanto o lucro líquido é persistentemente negativo (-86 milhões) não é investir, é especular sobre política pública.</p>
+<p>Minha posição para a MP é de total cautela. A estrutura técnica é fraca e os fundamentos operacionais são incertos. Entrar vendido agora, como sugere o Agressivo, expõe o portfólio a riscos de liquidez e notícias políticas imprevisíveis. Tentar acumular, como sugere o Neutro, expõe o patrimônio a um ativo que ainda não provou sua autossustentabilidade financeira.</p>
+<p>A recomendação mais prudente é não realizar nenhuma transação neste momento (Stay Aside). A MP apresenta uma volatilidade elevada (ATR 2,48) que não compensa a incerteza operacional. Preservar o capital é a nossa primeira regra. Deixem que outros testem a base desse suporte; só agiremos quando houver uma reversão clara do fluxo de caixa operacional e uma estabilização técnica acima da média móvel de 50 dias. Até lá, a firma deve permanecer neutra e protegida.</p>
+<p><strong>Rating</strong>: Underweight</p>
+<p>FINAL TRANSACTION PROPOSAL: <strong>HOLD</strong></p>
+<h3 id="s4-3">Neutral Analyst</h3>
+<p>Neutral Analyst: Como Analista de Risco Neutro, observo que tanto o Analista Agressivo quanto o Conservador caíram em armadilhas de viés cognitivo. O Analista Agressivo está ignorando o &quot;valor de opcionalidade&quot; que o caixa da MP Materials Corp. (MP) oferece, tratando-o apenas como um dado acessório, enquanto ignora que ativos com forte suporte estatal raramente seguem padrões puramente técnicos, o que torna uma posição vendida um risco de cauda desproporcional. Por outro lado, o Analista Conservador, ao clamar por uma paralisia total, ignora que o custo de oportunidade de estar fora de um ativo estratégico em um momento de pivotagem operacional pode ser tão prejudicial quanto uma perda técnica de curto prazo.</p>
+<p>Ao Analista Agressivo, pergunto: você está realmente confortável ignorando o risco de um <em>short squeeze</em>? O fato de a empresa possuir 1,16 bilhão de dólares em caixa e uma relevância geopolítica clara cria um piso artificial. Vender agora, no limite inferior das Bandas de Bollinger, é operar contra a estatística de reversão à média, o que é uma receita para ser estopado por uma notícia política, mesmo que a tendência técnica seja de baixa.</p>
+<p>Ao Analista Conservador, digo que esperar pela &quot;estabilização técnica&quot; é, na prática, desistir de qualquer eficiência no preço de entrada. O mercado não avisa quando a transição de um ativo estratégico está completa; ele se ajusta abruptamente. Ficar de fora (Stay Aside) ignora a realidade de que a volatilidade atual da MP, com seu ATR de 2,48, não é apenas um perigo, é uma janela de oportunidade para um posicionamento dimensionado de forma inteligente, e não para uma inação absoluta.</p>
+<p>Minha proposta é um meio-termo: uma entrada parcial, ou um &quot;Short com Proteção&quot;. Se insistirmos na tese de baixa pelo momentum negativo, que o façamos com uma posição reduzida (talvez 1% em vez dos 2% propostos) e uma ordem <em>stop-loss</em> mais ajustada, reconhecendo que estamos operando o fluxo técnico, mas respeitando o valor estratégico fundamental. No entanto, prefiro uma abordagem de &quot;Venda de Volatilidade&quot; ou &quot;Compra de Put&quot; em níveis específicos, ou, mais sensatamente, uma estratégia de <em>Entry Scaling</em>. Não precisamos ser agressivos a ponto de arriscar 2% em um ativo que está na parte inferior da banda, nem conservadores a ponto de ignorar o mercado. Proponho uma entrada monitorada, com um alvo de curto prazo, mas com um gatilho de saída imediato caso o suporte dos 44,05 não se sustente. Precisamos ser táticos, não emocionais.</p>
+<p><strong>Rating</strong>: Underweight</p>
+<p>FINAL TRANSACTION PROPOSAL: <strong>SELL (REDUCED POSITION)</strong></p>
+</section><section id="s5"><h2>V. Portfolio Manager Decision</h2><h3 id="s5-1">Portfolio Manager</h3>
+<p><strong>Rating</strong>: Underweight</p>
+<p><strong>Executive Summary</strong>: A recomendação é Underweight com foco tático na tendência de baixa, sugerindo uma redução ou alocação cautelosa (1% do portfólio) para capturar o momentum negativo. O preço de entrada de referência é 46.84 com stop loss em 51.13, mantendo monitoramento estrito do suporte técnico e do fluxo de caixa operacional.</p>
+<p><strong>Investment Thesis</strong>: A decisão equilibra o diagnóstico técnico de baixa consolidada — reforçado pelo preço abaixo das médias móveis de 50 e 200 dias e pelo momentum desfavorável apontado no relatório e pelo analista agressivo — com os riscos fundamentais levantados pelo conservador, como a queima de caixa operacional e prejuízos persistentes. Embora a empresa possua um colchão de liquidez de US$ 1,16 bilhão e relevância geopolítica estratégica, a ausência de margens operacionais comprovadas e a transição de alto CAPEX tornam o risco de execução elevado. A tese vencedora prioriza a inércia técnica de curto prazo, porém com dimensionamento reduzido para mitigar o risco de cauda associado a potenciais catalisadores governamentais.</p>
+<p><strong>Price Target</strong>: 44.05</p>
+<p><strong>Time Horizon</strong>: 1-3 months</p>
+</section>
+</main>
+<footer class="credit"><a href="https://github.com/TauricResearch/TradingAgents" rel="noopener">TradingAgents</a> powered by <a class="brand" href="https://github.com/TauricResearch" rel="noopener">Tauric Research</a></footer>
+</div>
+<a class="to-top" href="#top">Top</a>
+</body>
+</html>
