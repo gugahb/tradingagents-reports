@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">
+<title>HOOD 2026-10-05 Overweight: TradingAgents report</title>
+<style>
+:root {
+  --paper: #fbfbfa; --ink: #1c2126; --muted: #5d6670; --rule: #e2e5e8; --wash: #f2f4f5;
+  --accent: #087a59; --up: #087a59; --down: #b4372f; --level: #5d6670; --edge: #d3d8dc; --mark: #878f97;
+  --serif: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #131a1f; --ink: #e4e8eb; --muted: #9aa6af; --rule: #263239; --wash: #1a242a;
+    --accent: #14c290; --up: #14c290; --down: #ef6f63; --level: #9aa6af; --edge: #3d4c55; --mark: #66737c;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .masthead .logo [stroke="#363636"] { stroke: var(--muted); }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font: 17px/1.62 var(--serif); font-kerning: normal;
+}
+.page { max-width: 46rem; margin: 0 auto; padding: 3.5rem 1.5rem 6rem; }
+main h2, main h3 { scroll-margin-top: 1rem; }
+a { color: var(--accent); text-underline-offset: 0.15em; }
+h1, h2, h3, h4 { text-wrap: balance; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.masthead { padding-bottom: 1.75rem; border-bottom: 1px solid var(--rule); }
+/* The logo leads at the top left, where readers look for it, 24px tall (the usual
+   on-screen floor for a wordmark) with at least its height clear below. */
+.masthead .logo { display: block; width: fit-content; margin: 0 0 2.25rem; }
+.masthead .logo svg { display: block; height: 1.5rem; width: auto; }
+.masthead h1 {
+  margin: 0; font: 600 2.6rem/1.1 var(--sans); letter-spacing: -0.02em;
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.2em 0.5em;
+}
+.masthead .rating { font-weight: 500; }
+.rating.up { color: var(--up); } .rating.down { color: var(--down); } .rating.level { color: var(--level); }
+.rating.review { color: var(--muted); font-style: italic; }
+.masthead .date { margin: 0.55rem 0 1.5rem; font: 1rem/1.4 var(--sans); color: var(--muted); }
+.run { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 0.45rem 1.25rem;
+  font: 0.85rem/1.5 var(--sans); }
+.run > div { display: contents; }
+.run dt { color: var(--muted); }
+.run dd { margin: 0; overflow-wrap: anywhere; }
+.run .note dd { color: var(--down); }
+.field { display: inline-block; margin: 0 0.15rem 0.15rem 0; padding: 0 0.4rem; border: 1px solid var(--edge);
+  border-radius: 4px; background: var(--wash); font: 0.8rem/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.run .group { display: inline-block; margin-right: 0.9rem; white-space: nowrap; }
+.run .group > .name { color: var(--muted); margin-right: 0.3rem; }
+.run .then { color: var(--muted); margin: 0 0.2rem; }
+
+/* The sections: listed under the header on narrow screens. On wide ones, a
+   quiet rail centred on the left edge (numerals for the sections, short bars
+   for their agents) that opens into the full list when pointed at or focused. */
+.contents { margin: 2.25rem 0 0; font: 0.9rem/1.45 var(--sans); }
+.contents ul { margin: 0; padding: 0; list-style: none; }
+.contents > ul > li { margin: 0 0 0.75rem; }
+.contents ul ul { margin-top: 0.2rem; padding-left: 1.6rem; font-size: 0.85rem; }
+.contents ul ul li { margin: 0.1rem 0; }
+.contents a { display: flex; align-items: center; gap: 0.6rem; color: var(--muted); text-decoration: none; }
+.contents > ul > li > a { color: var(--ink); }
+.contents .num { min-width: 1.6rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.contents .bar { display: none; }
+.contents a:hover .label, .contents a:focus-visible .label { color: var(--accent); text-decoration: underline; }
+.to-top { position: fixed; right: 1rem; bottom: calc(1rem + env(safe-area-inset-bottom));
+  padding: 0.25rem 0.6rem; border: 1px solid var(--edge); border-radius: 4px; background: var(--paper);
+  color: var(--muted); font: 0.8rem/1.4 var(--sans); text-decoration: none; }
+
+@media (min-width: 60rem) {
+  .contents { position: fixed; left: 1rem; top: 50%; transform: translateY(-50%); z-index: 1;
+    max-height: 86vh; overflow-y: auto; overscroll-behavior: contain; margin: 0;
+    padding: 0.7rem 0.9rem; border: 1px solid transparent; border-radius: 6px;
+    transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s; }
+  .contents > ul > li { margin: 0 0 0.35rem; }
+  .contents ul ul { margin-top: 0; padding-left: 0; }
+  .contents ul ul li { margin: 0; }
+  /* Marks reach 3:1 contrast and rows 24px, the WCAG 2.2 floors for a control's
+     visual cue and its pointer target. */
+  .contents a { min-height: 1.5rem; }
+  .contents .num { min-width: 1.4rem; }
+  .contents .bar { display: block; flex: none; width: 1.25rem; height: 2px; margin-left: 0.2rem;
+    border-radius: 1px; background: var(--mark); }
+  .contents .label { max-width: 0; opacity: 0; overflow: hidden; white-space: nowrap;
+    transition: opacity 0.15s, max-width 0.2s; }
+  .contents:hover, .contents:focus-within { background: var(--paper); border-color: var(--rule);
+    box-shadow: 0 6px 24px rgb(0 0 0 / 0.08); }
+  .contents:hover .label, .contents:focus-within .label { max-width: 18rem; opacity: 1; }
+  .contents a:hover .bar, .contents a:focus-visible .bar { background: var(--accent); }
+  .to-top { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .contents, .contents .label { transition: none; }
+}
+
+/* The maker's credit: one quiet line at the foot. */
+.credit { margin-top: 4.5rem; padding-top: 1.25rem; border-top: 1px solid var(--rule);
+  color: var(--muted); font: 0.8rem/1.4 var(--sans); }
+.credit a { color: inherit; text-decoration: none; }
+.credit a.brand { color: var(--accent); }
+.credit a:hover, .credit a:focus-visible { text-decoration: underline; }
+
+/* Three levels of separation: the five groups, the agents within a group, and
+   breaks an agent draws inside its own text. */
+main h2 {
+  margin: 4.5rem 0 0.25rem; padding-top: 1.5rem; border-top: 2px solid var(--ink);
+  font: 600 1.45rem/1.3 var(--sans); letter-spacing: -0.01em;
+}
+main section:first-child h2 { margin-top: 3rem; }
+main h3 { margin: 2.75rem 0 0.75rem; padding-top: 1.1rem; border-top: 1px solid var(--rule);
+  font: 600 1.15rem/1.35 var(--sans); color: var(--accent); }
+main h2 + h3 { margin-top: 1.25rem; padding-top: 0; border-top: 0; }
+main h4, main h5, main h6 { margin: 1.75rem 0 0.5rem; font: 600 1rem/1.4 var(--sans); }
+main h5, main h6 { color: var(--muted); }
+main p, main ul, main ol { margin: 0 0 1rem; }
+main li { margin: 0.25rem 0; }
+main strong { font-weight: 650; }
+main blockquote { margin: 1.25rem 0; padding: 0.1rem 0 0.1rem 1rem; border-left: 3px solid var(--rule);
+  color: var(--muted); }
+main code { font: 0.88em/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  background: var(--wash); padding: 0.1em 0.3em; border-radius: 3px; }
+main pre { background: var(--wash); padding: 0.9rem 1rem; border-radius: 4px; overflow-x: auto; }
+main pre code { background: none; padding: 0; }
+main hr { width: 3rem; margin: 2rem auto; border: 0; border-top: 1px solid var(--rule); }
+
+.table { overflow-x: auto; margin: 0 0 1.25rem; }
+table { border-collapse: collapse; width: 100%; font: 0.86rem/1.45 var(--sans);
+  font-variant-numeric: tabular-nums; }
+th, td { padding: 0.45rem 0.7rem; text-align: left; vertical-align: top; border-bottom: 1px solid var(--rule); }
+th { font-weight: 600; border-bottom-color: var(--muted); }
+tbody tr:last-child td { border-bottom: 0; }
+
+@media (max-width: 34rem) {
+  body { font-size: 16px; }
+  .page { padding: 2rem 1rem 3rem; }
+  .masthead h1 { font-size: 2rem; }
+  .masthead .logo svg { height: 1.25rem; }
+  .run { grid-template-columns: 1fr; gap: 0 0; }
+  .run dd { margin-bottom: 0.45rem; }
+  .run .group { white-space: normal; }
+}
+@media print {
+  :root { --paper: #fff; --ink: #000; --muted: #444; --rule: #bbb; --accent: #000; --wash: #f2f2f2;
+    --edge: #bbb; --up: #087a59; --down: #b4372f; --level: #444; }
+  body { font-size: 11pt; }
+  .table { overflow: visible; }
+  .page { max-width: none; padding: 0; }
+  .contents, .to-top { display: none; }
+  main h2 { break-before: page; border-top: 0; margin-top: 0; }
+  main section:first-child h2 { break-before: auto; }
+  main h3, main h4 { break-after: avoid; }
+  a { color: inherit; text-decoration: none; }
+  table { break-inside: avoid; }
+}
+</style>
+</head>
+<body><!-- TARJA-AVISO --><style>
+.tarja-aviso{position:sticky;top:0;z-index:99;margin:0;padding:.7rem 1rem;background:#fff3cd;color:#5c4400;
+border-bottom:2px solid #e0a800;font:600 14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;text-align:center}
+.tarja-aviso small{display:block;font-weight:400;opacity:.85;margin-top:.15rem}
+@media (prefers-color-scheme:dark){.tarja-aviso{background:#3b2f00;color:#ffe9a6;border-bottom-color:#b88a00}}
+</style><div class="tarja-aviso" role="note">⚠ Experimento de pesquisa gerado por agentes de IA (modelos leves). Não é recomendação de investimento nem análise de valores mobiliários. Dados não verificados, podem estar incompletos ou errados. Decisões de investimento são de responsabilidade exclusiva do leitor.<small>Modelos: gemini-3.1-flash-lite / gemini-3.5-flash-lite · Gerado em: 06/10/2026 10:23</small></div>
+<div class="page" id="top">
+<header class="masthead">
+<a class="logo" href="https://tauric.ai" rel="noopener" aria-label="Tauric Research"><svg width="993" height="115" viewBox="0 0 993 115" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M189.86 95.0459V37.9779H165.924V29.9259H223.74V37.9779H199.804V95.0459H189.86ZM251.026 46.4259C256.071 46.4259 260.178 47.0272 263.345 48.2299C266.514 49.4032 268.89 51.3686 270.474 54.1259C272.058 56.8832 272.85 60.6379 272.85 65.3899V95.0459H264.666L263.961 89.8979H263.434C261.644 91.7752 259.386 93.2419 256.657 94.2979C253.929 95.3246 251.025 95.8379 247.946 95.8379C244.426 95.8379 241.419 95.2952 238.925 94.2099C236.432 93.0952 234.54 91.5406 233.249 89.5459C231.959 87.5512 231.313 85.2046 231.313 82.5059C231.313 78.2526 232.897 74.9672 236.065 72.6499C239.263 70.3032 244.337 68.8219 251.29 68.2059L263.258 67.0179V64.7299C263.258 61.9139 262.774 59.7139 261.806 58.1299C260.838 56.5459 259.371 55.4312 257.406 54.7859C255.47 54.1406 252.888 53.8179 249.662 53.8179C247.432 53.8179 245.012 54.0086 242.401 54.3899C239.82 54.7712 237.341 55.3432 234.965 56.1059V48.8019C237.312 48.0392 239.908 47.4526 242.754 47.0419C245.628 46.6312 248.386 46.4259 251.026 46.4259ZM250.541 89.0619C252.888 89.0619 255.162 88.6512 257.362 87.8299C259.562 86.9792 261.527 85.7179 263.258 84.0459V72.8259L252.038 73.9259C248.136 74.3659 245.35 75.2166 243.678 76.4779C242.005 77.7099 241.169 79.4699 241.169 81.7579C241.169 84.0752 241.947 85.8792 243.501 87.1699C245.056 88.4312 247.403 89.0619 250.541 89.0619ZM313.339 95.8379C307.59 95.8379 303.087 94.2979 299.831 91.2179C296.575 88.1086 294.947 83.2686 294.947 76.6979V47.1739H304.715V76.1699C304.715 80.1886 305.624 83.0779 307.443 84.8379C309.291 86.5979 311.916 87.4779 315.319 87.4779C317.871 87.4779 320.379 86.9939 322.843 86.0259C325.336 85.0286 327.492 83.5766 329.311 81.6699V47.1739H339.079V95.0459H330.983L330.367 89.9419H329.883C327.624 91.8486 325.072 93.3152 322.227 94.3419C319.382 95.3392 316.419 95.8379 313.339 95.8379ZM362.371 47.1739H370.423L371.171 53.2899H371.743C373.474 51.2072 375.703 49.5792 378.431 48.4059C381.188 47.2326 384.063 46.6459 387.055 46.6459C388.756 46.6459 390.355 46.7926 391.851 47.0859V55.8419C390.414 55.5779 388.654 55.4459 386.571 55.4459C383.99 55.4459 381.364 55.9446 378.695 56.9419C376.026 57.9392 373.84 59.4206 372.139 61.3859V95.0459H362.371V47.1739ZM409.069 95.0459V47.1739H418.837V95.0459H409.069ZM413.953 37.8459C411.871 37.8459 410.287 37.3912 409.201 36.4819C408.145 35.5726 407.617 34.2672 407.617 32.5659C407.617 30.8352 408.145 29.5152 409.201 28.6059C410.287 27.6672 411.871 27.1979 413.953 27.1979C416.036 27.1979 417.605 27.6672 418.661 28.6059C419.747 29.5152 420.289 30.8352 420.289 32.5659C420.289 34.2672 419.747 35.5726 418.661 36.4819C417.605 37.3912 416.036 37.8459 413.953 37.8459ZM464.85 95.9259C456.607 95.9259 450.315 93.8432 445.974 89.6779C441.662 85.5126 439.506 79.3526 439.506 71.1979C439.506 63.0139 441.779 56.8392 446.326 52.6739C450.902 48.5086 457.575 46.4259 466.346 46.4259C470.716 46.4259 474.735 46.9246 478.402 47.9219V55.7099C476.378 55.2406 474.486 54.8886 472.726 54.6539C470.966 54.4192 469.118 54.3019 467.182 54.3019C461.168 54.3019 456.71 55.6512 453.806 58.3499C450.931 61.0486 449.494 65.2872 449.494 71.0659C449.494 76.8739 450.858 81.1566 453.586 83.9139C456.343 86.6712 460.42 88.0499 465.818 88.0499C467.695 88.0499 469.616 87.8886 471.582 87.5659C473.547 87.2139 475.82 86.6712 478.402 85.9379V93.7259C474.236 95.1926 469.719 95.9259 464.85 95.9259ZM574.428 95.0459L553.704 69.0859C553.176 69.1152 552.37 69.1299 551.284 69.1299C548.38 69.1299 544.978 68.9832 541.076 68.6899V95.0459H531.308V31.4659C537.967 29.9699 544.846 29.2219 551.944 29.2219C561.595 29.2219 568.752 30.8059 573.416 33.9739C578.08 37.1126 580.412 42.1286 580.412 49.0219C580.412 54.0086 579.004 58.0859 576.188 61.2539C573.402 64.4219 569.266 66.6366 563.78 67.8979L585.648 95.0459H574.428ZM541.076 61.2099C543.071 61.4152 544.816 61.5619 546.312 61.6499C547.838 61.7379 549.627 61.7819 551.68 61.7819C558.427 61.7819 563.34 60.7699 566.42 58.7459C569.5 56.6926 571.04 53.4952 571.04 49.1539C571.04 46.0739 570.395 43.6099 569.104 41.7619C567.843 39.9139 565.863 38.5792 563.164 37.7579C560.495 36.9366 556.975 36.5259 552.604 36.5259C550.404 36.5259 548.424 36.6139 546.664 36.7899C544.904 36.9659 543.042 37.2299 541.076 37.5819V61.2099ZM642.947 74.0139H608.231C608.407 77.4752 609.155 80.2766 610.475 82.4179C611.795 84.5299 613.775 86.0846 616.415 87.0819C619.055 88.0792 622.443 88.5779 626.579 88.5779C630.686 88.5779 635.233 87.9472 640.219 86.6859V93.9459C635.027 95.2659 630.026 95.9259 625.215 95.9259C616.298 95.9259 609.61 93.9166 605.151 89.8979C600.722 85.8499 598.507 79.6166 598.507 71.1979C598.507 65.9179 599.402 61.4299 601.191 57.7339C602.981 54.0379 605.562 51.2366 608.935 49.3299C612.338 47.3939 616.43 46.4259 621.211 46.4259C628.251 46.4259 633.634 48.5819 637.359 52.8939C641.085 57.1766 642.947 63.3659 642.947 71.4619V74.0139ZM621.079 52.8939C616.973 52.8939 613.834 54.1406 611.663 56.6339C609.493 59.0979 608.334 62.9259 608.187 68.1179H633.751C633.634 62.9259 632.519 59.0979 630.407 56.6339C628.295 54.1406 625.186 52.8939 621.079 52.8939ZM677.365 95.9259C671.352 95.9259 665.896 95.2219 660.997 93.8139V86.7299C666.248 88.1966 671.718 88.9299 677.409 88.9299C681.809 88.9299 684.977 88.3432 686.913 87.1699C688.849 85.9672 689.817 84.2219 689.817 81.9339C689.817 80.7019 689.597 79.6899 689.157 78.8979C688.717 78.0766 687.969 77.4019 686.913 76.8739C685.857 76.3166 684.405 75.8912 682.557 75.5979L674.065 74.2779C669.137 73.4859 665.573 71.9899 663.373 69.7899C661.202 67.5899 660.117 64.6419 660.117 60.9459C660.117 56.4579 661.965 52.9232 665.661 50.3419C669.386 47.7312 675.062 46.4259 682.689 46.4259C685.094 46.4259 687.485 46.5872 689.861 46.9099C692.266 47.2032 694.481 47.6432 696.505 48.2299V55.2699C692.046 54.0379 687.456 53.4219 682.733 53.4219C677.893 53.4219 674.476 54.0526 672.481 55.3139C670.486 56.5752 669.489 58.3206 669.489 60.5499C669.489 62.2219 670.002 63.5859 671.029 64.6419C672.056 65.6686 673.889 66.4166 676.529 66.8859L685.021 68.2059C689.92 68.9686 693.513 70.3766 695.801 72.4299C698.089 74.4832 699.233 77.4606 699.233 81.3619C699.233 84.3832 698.412 86.9792 696.769 89.1499C695.156 91.3206 692.706 92.9926 689.421 94.1659C686.165 95.3392 682.146 95.9259 677.365 95.9259ZM760.579 74.0139H725.863C726.039 77.4752 726.787 80.2766 728.107 82.4179C729.427 84.5299 731.407 86.0846 734.047 87.0819C736.687 88.0792 740.075 88.5779 744.211 88.5779C748.317 88.5779 752.864 87.9472 757.851 86.6859V93.9459C752.659 95.2659 747.657 95.9259 742.847 95.9259C733.929 95.9259 727.241 93.9166 722.783 89.8979C718.353 85.8499 716.139 79.6166 716.139 71.1979C716.139 65.9179 717.033 61.4299 718.823 57.7339C720.612 54.0379 723.193 51.2366 726.567 49.3299C729.969 47.3939 734.061 46.4259 738.843 46.4259C745.883 46.4259 751.265 48.5819 754.991 52.8939C758.716 57.1766 760.579 63.3659 760.579 71.4619V74.0139ZM738.711 52.8939C734.604 52.8939 731.465 54.1406 729.295 56.6339C727.124 59.0979 725.965 62.9259 725.819 68.1179H751.383C751.265 62.9259 750.151 59.0979 748.039 56.6339C745.927 54.1406 742.817 52.8939 738.711 52.8939ZM796.986 46.4259C802.032 46.4259 806.138 47.0272 809.306 48.2299C812.474 49.4032 814.85 51.3686 816.434 54.1259C818.018 56.8832 818.81 60.6379 818.81 65.3899V95.0459H810.626L809.922 89.8979H809.394C807.605 91.7752 805.346 93.2419 802.618 94.2979C799.89 95.3246 796.986 95.8379 793.906 95.8379C790.386 95.8379 787.38 95.2952 784.886 94.2099C782.393 93.0952 780.501 91.5406 779.21 89.5459C777.92 87.5512 777.274 85.2046 777.274 82.5059C777.274 78.2526 778.858 74.9672 782.026 72.6499C785.224 70.3032 790.298 68.8219 797.25 68.2059L809.218 67.0179V64.7299C809.218 61.9139 808.734 59.7139 807.766 58.1299C806.798 56.5459 805.332 55.4312 803.366 54.7859C801.43 54.1406 798.849 53.8179 795.622 53.8179C793.393 53.8179 790.973 54.0086 788.362 54.3899C785.781 54.7712 783.302 55.3432 780.926 56.1059V48.8019C783.273 48.0392 785.869 47.4526 788.714 47.0419C791.589 46.6312 794.346 46.4259 796.986 46.4259ZM796.502 89.0619C798.849 89.0619 801.122 88.6512 803.322 87.8299C805.522 86.9792 807.488 85.7179 809.218 84.0459V72.8259L797.998 73.9259C794.097 74.3659 791.31 75.2166 789.638 76.4779C787.966 77.7099 787.13 79.4699 787.13 81.7579C787.13 84.0752 787.908 85.8792 789.462 87.1699C791.017 88.4312 793.364 89.0619 796.502 89.0619ZM841.524 47.1739H849.576L850.324 53.2899H850.896C852.627 51.2072 854.856 49.5792 857.584 48.4059C860.341 47.2326 863.216 46.6459 866.208 46.6459C867.909 46.6459 869.508 46.7926 871.004 47.0859V55.8419C869.567 55.5779 867.807 55.4459 865.724 55.4459C863.143 55.4459 860.517 55.9446 857.848 56.9419C855.179 57.9392 852.993 59.4206 851.292 61.3859V95.0459H841.524V47.1739ZM909.164 95.9259C900.921 95.9259 894.629 93.8432 890.288 89.6779C885.976 85.5126 883.82 79.3526 883.82 71.1979C883.82 63.0139 886.093 56.8392 890.64 52.6739C895.216 48.5086 901.889 46.4259 910.66 46.4259C915.03 46.4259 919.049 46.9246 922.716 47.9219V55.7099C920.692 55.2406 918.8 54.8886 917.04 54.6539C915.28 54.4192 913.432 54.3019 911.496 54.3019C905.482 54.3019 901.024 55.6512 898.12 58.3499C895.245 61.0486 893.808 65.2872 893.808 71.0659C893.808 76.8739 895.172 81.1566 897.9 83.9139C900.657 86.6712 904.734 88.0499 910.132 88.0499C912.009 88.0499 913.93 87.8886 915.896 87.5659C917.861 87.2139 920.134 86.6712 922.716 85.9379V93.7259C918.55 95.1926 914.033 95.9259 909.164 95.9259ZM941.796 23.9419H951.564V52.2779H952.048C954.248 50.3712 956.756 48.9192 959.572 47.9219C962.417 46.9246 965.395 46.4259 968.504 46.4259C974.019 46.4259 978.375 47.9952 981.572 51.1339C984.769 54.2432 986.368 59.0686 986.368 65.6099V95.0459H976.6V66.0939C976.6 62.0459 975.661 59.1566 973.784 57.4259C971.936 55.6952 969.237 54.8299 965.688 54.8299C963.048 54.8299 960.481 55.3286 957.988 56.3259C955.524 57.2939 953.383 58.7312 951.564 60.6379V95.0459H941.796V23.9419Z" fill="#14C290"/>
+<rect x="0.205322" y="14.873" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="43.1211" y="29.1787" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect y="29.1787" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="14.679" y="29.1787" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="14.679" y="44.0371" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="29.3579" y="29.1787" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="29.3579" y="44.0371" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="71.9265" y="29.1787" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="71.9265" y="44.0371" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="57.2478" y="29.1787" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="86.6055" y="29.1787" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="86.6055" y="44.0371" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="101.284" y="29.1787" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="29.3579" y="58.7158" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="71.9265" y="58.7158" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="43.1211" y="87.1592" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="57.2478" y="87.1592" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="29.3579" y="73.0205" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="71.9265" y="73.0205" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="29.3579" y="87.3262" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="71.9265" y="87.3262" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="43.1211" y="101.631" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="57.2478" y="101.631" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="101.284" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+<rect x="15.0187" y="15.213" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="29.6979" y="15.213" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="43.4611" y="15.213" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="57.5876" y="15.213" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="43.4611" y="44.3771" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="0.34" y="44.3771" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="57.5876" y="44.3771" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="101.624" y="44.3771" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="43.4611" y="59.0558" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="57.5876" y="59.0558" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="0.34" y="59.0558" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="15.0187" y="59.0558" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="86.9455" y="59.0558" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="101.624" y="59.0558" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="43.4611" y="73.3605" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="57.5876" y="73.3605" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="0.34" y="73.3605" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="15.0187" y="73.3605" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="86.9455" y="73.3605" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="101.624" y="73.3605" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="0.34" y="87.6662" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="15.0187" y="87.6662" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="86.9455" y="87.6662" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="101.624" y="87.6662" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="0.34" y="101.971" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="15.0187" y="101.971" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="29.6979" y="101.971" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="72.2668" y="101.971" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="86.9455" y="101.971" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="101.624" y="101.971" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="43.4611" y="0.34" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="57.5876" y="0.34" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="15.0187" y="0.34" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="29.6979" y="0.34" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="72.2668" y="0.34" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="86.9455" y="0.34" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="72.445" y="15.213" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="86.7506" y="15.213" width="10.0489" height="10.0489" rx="5.02447" stroke="#363636" stroke-width="0.68"/>
+<rect x="100.716" y="14.873" width="10.7289" height="10.7289" rx="5.36447" fill="#14C290"/>
+</svg></a>
+<h1><span class="ticker">HOOD</span> <span class="rating up">Overweight</span></h1>
+<p class="date">Analysis of 2026-10-05</p>
+<dl class="run"><div class="detail"><dt>Generated</dt><dd>2026-10-06 10:23</dd></div><div class="detail"><dt>Deep model</dt><dd><span class="field">google</span> <span class="field">gemini-3.5-flash-lite</span></dd></div><div class="detail"><dt>Quick model</dt><dd><span class="field">google</span> <span class="field">gemini-3.1-flash-lite</span></dd></div><div class="detail"><dt>Analysts</dt><dd><span class="field">market</span> <span class="field">news</span> <span class="field">fundamentals</span></dd></div><div class="detail"><dt>Debate rounds</dt><dd><span class="group"><span class="name">research</span><span class="field">1</span></span> <span class="group"><span class="name">risk</span><span class="field">1</span></span></dd></div><div class="detail"><dt>Data vendors</dt><dd><span class="group"><span class="name">Prices</span><span class="field">yfinance</span></span> <span class="group"><span class="name">Indicators</span><span class="field">yfinance</span></span> <span class="group"><span class="name">Fundamentals</span><span class="field">sec_edgar</span> <span class="then">→</span> <span class="field">yfinance</span></span> <span class="group"><span class="name">News</span><span class="field">yfinance</span></span> <span class="group"><span class="name">Macro</span><span class="field">fred</span></span> <span class="group"><span class="name">Prediction markets</span><span class="field">polymarket</span></span></dd></div><div class="detail"><dt>Version</dt><dd>TradingAgents 0.6.0</dd></div></dl>
+</header>
+<nav class="contents" aria-label="Sections"><ul><li><a href="#s1"><span class="num">I</span> <span class="label">Analyst Team Reports</span></a><ul><li><a href="#s1-1"><span class="bar"></span> <span class="label">Market Analyst</span></a></li><li><a href="#s1-2"><span class="bar"></span> <span class="label">News Analyst</span></a></li><li><a href="#s1-3"><span class="bar"></span> <span class="label">Fundamentals Analyst</span></a></li></ul></li><li><a href="#s2"><span class="num">II</span> <span class="label">Research Team Decision</span></a><ul><li><a href="#s2-1"><span class="bar"></span> <span class="label">Bull Researcher</span></a></li><li><a href="#s2-2"><span class="bar"></span> <span class="label">Bear Researcher</span></a></li><li><a href="#s2-3"><span class="bar"></span> <span class="label">Research Manager</span></a></li></ul></li><li><a href="#s3"><span class="num">III</span> <span class="label">Trading Team Plan</span></a><ul><li><a href="#s3-1"><span class="bar"></span> <span class="label">Trader</span></a></li></ul></li><li><a href="#s4"><span class="num">IV</span> <span class="label">Risk Management Team Decision</span></a><ul><li><a href="#s4-1"><span class="bar"></span> <span class="label">Aggressive Analyst</span></a></li><li><a href="#s4-2"><span class="bar"></span> <span class="label">Conservative Analyst</span></a></li><li><a href="#s4-3"><span class="bar"></span> <span class="label">Neutral Analyst</span></a></li></ul></li><li><a href="#s5"><span class="num">V</span> <span class="label">Portfolio Manager Decision</span></a><ul><li><a href="#s5-1"><span class="bar"></span> <span class="label">Portfolio Manager</span></a></li></ul></li></ul></nav>
+<main>
+<section id="s1"><h2>I. Analyst Team Reports</h2><h3 id="s1-1">Market Analyst</h3>
+<p>A análise técnica da Robinhood Markets, Inc. (<code>HOOD</code>) em 5 de outubro de 2026, revela uma ação em uma fase de consolidação após movimentos voláteis no mês anterior. Abaixo, detalho os observações fundamentais:</p>
+<h6>Tendência e Momentum</h6>
+<p>A <code>HOOD</code> mantém uma tendência de alta de médio a longo prazo, sendo negociada a 114,11 USD, confortavelmente acima de suas médias móveis de 50 dias (105,78 USD) e 200 dias (94,30 USD). No entanto, o momentum de curto prazo mostra sinais de fraqueza. O MACD (1,83) encontra-se abaixo de sua linha de sinal (3,05), resultando em um histograma negativo (-1,22), o que sugere uma pressão de venda ou perda de força compradora recente. O RSI em 51,43 indica um mercado neutro, sem estar sobrecomprado nem sobrevendido.</p>
+<h6>Volatilidade e Níveis de Preço</h6>
+<p>A ação está negociando próximo à média da Banda de Bollinger (115,55 USD), indicando neutralidade dentro do intervalo das bandas (limite superior em 125,70 USD e inferior em 105,40 USD). O ATR de 6,02 reflete uma volatilidade considerável, exigindo cautela na definição de <em>stop-loss</em>. O preço fechou ligeiramente abaixo da EMA de 10 dias (114,96 USD), reforçando a ideia de um curto prazo cauteloso.</p>
+<h6>Conclusão e Perspetiva</h6>
+<p>A <code>HOOD</code> demonstra resiliência estrutural, mantendo-se acima de suas médias de longo prazo, mas o alinhamento atual de indicadores como o MACD e a posição relativa à EMA de 10 dias sugerem que os investidores devem aguardar uma confirmação de força antes de novas entradas agressivas. A área de 105,00 - 106,00 USD atua como um suporte técnico relevante (coincidindo com a 50 SMA e a banda inferior de Bollinger).</p>
+<div class="table"><table>
+<thead>
+<tr>
+<th style="text-align:left">Indicador</th>
+<th style="text-align:left">Valor Atual</th>
+<th style="text-align:left">Significado Técnico</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Preço de Fechamento</strong></td>
+<td style="text-align:left">114,11</td>
+<td style="text-align:left">Preço atual de mercado</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>EMA 10 dias</strong></td>
+<td style="text-align:left">114,96</td>
+<td style="text-align:left">Média de curto prazo</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>SMA 50 dias</strong></td>
+<td style="text-align:left">105,78</td>
+<td style="text-align:left">Suporte de médio prazo</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>SMA 200 dias</strong></td>
+<td style="text-align:left">94,30</td>
+<td style="text-align:left">Suporte de longo prazo</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>RSI</strong></td>
+<td style="text-align:left">51,43</td>
+<td style="text-align:left">Momentum Neutro</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>MACD</strong></td>
+<td style="text-align:left">1,83</td>
+<td style="text-align:left">Momentum de baixa (abaixo da sinal)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>ATR</strong></td>
+<td style="text-align:left">6,02</td>
+<td style="text-align:left">Volatilidade moderada</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Bandas de Bollinger</strong></td>
+<td style="text-align:left">105,40 - 125,70</td>
+<td style="text-align:left">Faixa de negociação esperada</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Rating</strong>: Neutral</p>
+<p>FINAL TRANSACTION PROPOSAL: Mantém-se a recomendação de neutralidade com atenção aos níveis de suporte próximos a 105 USD. Monitorar por um cruzamento positivo do MACD ou um fechamento consistente acima de 116 USD para reavaliar o momentum.</p>
+<h3 id="s1-2">News Analyst</h3>
+<p>O relatório a seguir resume o panorama atual da <strong>Robinhood Markets, Inc. (HOOD)</strong> e o ambiente macroeconômico relevante até 5 de outubro de 2026.</p>
+<h6>Análise da HOOD e Contexto de Mercado</h6>
+<p>A <strong>HOOD</strong> está vivendo um momento de alta intensidade operacional e estratégica. A empresa tem expandido agressivamente suas ofertas, com destaque para a introdução de derivativos de criptoativos (alavancagem de 10x em Bitcoin e Ether) e a expansão de contratos de eventos. Esta estratégia de diversificação de produtos tem atraído atenção positiva de analistas (incluindo aumentos de preço-alvo pelo Bank of America), mas também levanta questões sobre o apetite ao risco da plataforma em meio a um ambiente regulatório mais vigilante.</p>
+<p><strong>Pontos-chave:</strong></p>
+<ul>
+<li><strong>Expansão de Produtos:</strong> A aposta em <em>trading</em> 24/7 e em novos produtos derivativos coloca a HOOD na vanguarda da inovação em finanças de varejo, mas a coloca em competição direta com ecossistemas de criptoativos mais maduros e sob a mira do CFTC.</li>
+<li><strong>Desempenho de Mercado:</strong> O preço da ação tem se mantido resiliente, impulsionado por um sentimento positivo no setor de tecnologia e pelo engajamento dos usuários em novos nichos, como mercados de predição e ativos digitais.</li>
+<li><strong>Macroeconomia:</strong> Embora os dados do FRED não estejam disponíveis, as notícias globais indicam um mercado acionário (especialmente o Nasdaq) em níveis recordes, apesar das preocupações persistentes com o impacto de taxas de juros elevadas no consumo discricionário. O otimismo tecnológico tem superado a cautela no mercado de títulos de dívida.</li>
+</ul>
+<h6>Resumo das Informações</h6>
+<div class="table"><table>
+<thead>
+<tr>
+<th style="text-align:left">Categoria</th>
+<th style="text-align:left">Observações Principais</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>HOOD Estratégia</strong></td>
+<td style="text-align:left">Foco em 24/7 trading, alavancagem em cripto e mercados de predição.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Sentimento Analista</strong></td>
+<td style="text-align:left">Otimista; elevações recentes de preço-alvo por grandes instituições.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Riscos Regulatórios</strong></td>
+<td style="text-align:left">Vigilância sobre alavancagem em varejo e novos modelos de registro.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Contexto Macro</strong></td>
+<td style="text-align:left">Nasdaq em recordes; resiliência tech apesar da pressão de juros.</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Rating</strong>: Neutral to Positive</p>
+<p>FINAL TRANSACTION PROPOSAL: Mantém-se a recomendação de monitorar a execução dos novos produtos de alavancagem e a resposta regulatória, dado que o rali atual parece precificado pelo otimismo tecnológico, mas expõe a base de usuários a riscos elevados. Recomenda-se cautela quanto à volatilidade decorrente de possíveis medidas regulatórias sobre contratos de eventos e derivativos de cripto.</p>
+<h3 id="s1-3">Fundamentals Analyst</h3>
+<p>Este relatório apresenta uma análise fundamentalista da <strong>Robinhood Markets, Inc. (HOOD)</strong> com base nos dados financeiros disponíveis até 5 de outubro de 2026.</p>
+<h6>Análise de Desempenho Financeiro</h6>
+<p>A trajetória financeira da <strong>HOOD</strong> nos últimos anos mostra uma transição clara de uma fase de alto crescimento e prejuízo (2021-2022) para uma fase de rentabilidade consistente e aumento de receita a partir de 2024.</p>
+<ol>
+<li><strong>Crescimento da Receita:</strong> A empresa demonstrou um forte momentum na receita, atingindo US$ 1,308 bilhão no segundo trimestre de 2026, comparado aos US$ 989 milhões no mesmo período de 2025. Este crescimento sugere uma escala maior nas operações e uma maior base de usuários ou maior volume transacionado.</li>
+<li><strong>Rentabilidade:</strong> O resultado líquido tem sido positivo desde 2024. No segundo trimestre de 2026, a empresa reportou um lucro líquido de US$ 561 milhões, um salto significativo em relação aos US$ 386 milhões no segundo trimestre de 2025. O EPS diluído de US$ 0,62 no último trimestre reflete essa melhoria na eficiência operacional.</li>
+<li><strong>Fluxo de Caixa Operacional:</strong> A empresa apresenta um fluxo de caixa operacional robusto e crescente, atingindo US$ 2,758 bilhões no acumulado dos seis primeiros meses de 2026, o que é um indicador positivo de saúde financeira e capacidade de autossustento.</li>
+<li><strong>Estrutura de Capital:</strong> O patrimônio líquido (Stockholders Equity) tem crescido de forma constante, atingindo US$ 9,541 bilhões no final do segundo trimestre de 2026, o que reforça o balanço patrimonial da empresa frente aos seus passivos.</li>
+</ol>
+<h6>Insights para Traders</h6>
+<ul>
+<li><strong>Tendência Positiva:</strong> A empresa provou ser capaz de virar o jogo em relação aos prejuízos significativos do passado, estabelecendo uma base de lucro consistente.</li>
+<li><strong>Volatilidade e Fatores Externos:</strong> Embora os números financeiros sejam positivos, o modelo de negócio da <strong>HOOD</strong> está intrinsecamente ligado ao volume de mercado e ao interesse do varejo em ativos de risco (como criptomoedas e ações voláteis), que podem flutuar drasticamente.</li>
+<li><strong>Sustentabilidade:</strong> A capacidade da empresa de manter o crescimento da receita em um ambiente de taxas de juros variáveis e concorrência no setor de corretagem será o principal driver de preço no médio prazo.</li>
+</ul>
+<hr />
+<h6>Resumo de Dados Principais (Q2 2026)</h6>
+<div class="table"><table>
+<thead>
+<tr>
+<th style="text-align:left">Indicador</th>
+<th style="text-align:left">Valor (em milhões USD, exceto EPS)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Receita</strong></td>
+<td style="text-align:left">1.308</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Lucro Líquido</strong></td>
+<td style="text-align:left">561</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>EPS Diluído (USD)</strong></td>
+<td style="text-align:left">0,62</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Fluxo de Caixa Operacional (6 meses)</strong></td>
+<td style="text-align:left">2.758</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Patrimônio Líquido</strong></td>
+<td style="text-align:left">9.541</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Rating</strong>: Neutral to Positive</p>
+<p>FINAL TRANSACTION PROPOSAL: Based on consistent profitability trends and strong revenue growth, maintain current positions or consider accumulating on dips if market volatility aligns with risk appetite.</p>
+</section><section id="s2"><h2>II. Research Team Decision</h2><h3 id="s2-1">Bull Researcher</h3>
+<p>Bull Analyst: Como analista Bull, olho para a <code>HOOD</code> e vejo muito mais do que apenas uma corretora; vejo uma potência financeira que completou sua transição de uma &quot;startup disruptiva&quot; para uma empresa de tecnologia financeira altamente rentável e escalável.</p>
+<p>Aqui está o porquê de eu estar otimista com a <code>HOOD</code>:</p>
+<h6>1. Rentabilidade Real e Sustentável</h6>
+<p>Enquanto muitos críticos ainda olham para a <code>HOOD</code> com a visão de 2021, os números contam uma história de maturidade operacional inegável. Com um lucro líquido de 561 milhões de dólares no segundo trimestre de 2026 e um EPS de 0,62 dólares, a empresa provou que seu modelo de negócios não apenas sobreviveu, mas prosperou. O salto de quase 50% na receita trimestral (de 989 milhões para 1,308 bilhão em um ano) demonstra que o engajamento dos usuários não é sazonal, mas sim estrutural.</p>
+<h6>2. Inovação que Impulsiona o Engajamento</h6>
+<p>A <code>HOOD</code> está na vanguarda da evolução das finanças de varejo. A introdução de derivativos de criptoativos (alavancagem 10x) e mercados de predição atende exatamente à demanda do investidor moderno, que busca ferramentas sofisticadas em uma interface intuitiva. Críticos podem chamar isso de &quot;risco regulatório&quot;, mas eu chamo de <strong>vantagem competitiva de primeira linha</strong>. Ao capturar o volume que antes migrava para plataformas obscuras, a <code>HOOD</code> consolida sua posição como o ecossistema financeiro preferido da nova geração.</p>
+<h6>3. Fortaleza Financeira</h6>
+<p>Com um patrimônio líquido de 9,54 bilhões de dólares e um fluxo de caixa operacional de 2,758 bilhões no primeiro semestre de 2026, a <code>HOOD</code> possui o &quot;músculo financeiro&quot; necessário para navegar em qualquer ambiente de taxas de juros ou volatilidade de mercado. A empresa é, hoje, uma geradora de caixa, não uma consumidora.</p>
+<h6>Refutando o Ceticismo Técnico e Regulatório</h6>
+<p>Eu reconheço que o mercado está em uma fase de consolidação técnica e que indicadores como o MACD sugerem uma cautela momentânea. No entanto, focar apenas no ruído de curto prazo é perder o panorama macro. O suporte na casa dos 105-106 dólares é um ponto de entrada fantástico que coincide com médias móveis sólidas.</p>
+<p>Quanto aos medos sobre o CFTC ou regulações, a história da <code>HOOD</code> tem sido uma de adaptação resiliente. Eles não operam no vácuo; eles operam dentro de um sistema que, apesar dos desafios, valida a necessidade de plataformas eficientes para o investidor varejista. A ascensão da <code>HOOD</code> não é um acidente, é o resultado de uma execução operacional impecável.</p>
+<p><strong>Conclusão:</strong>
+O rali que vimos não é apenas otimismo tecnológico; é a precificação de uma empresa que domina o seu nicho e continua a expandir margens. Enquanto alguns esperam por uma correção, eu prefiro acumular posições nestes níveis técnicos de suporte. A <code>HOOD</code> é uma empresa que aprendeu a escalar e, o mais importante, aprendeu a lucrar.</p>
+<p><strong>Rating</strong>: Bullish</p>
+<p>FINAL TRANSACTION PROPOSAL: Recomendo a compra (Accumulate) aproveitando os recuos em direção à zona de suporte de 105-106 USD. O momento é de fortalecer posições para surfar a próxima onda de expansão da base de usuários e novos produtos financeiros.</p>
+<h3 id="s2-2">Bear Researcher</h3>
+<p>Bear Analyst: Companheiro analista, admiro o seu entusiasmo com a transformação da <code>HOOD</code> em uma máquina de lucro, mas vejo uma perigosa dose de miopia em seu otimismo. Você chama de &quot;vantagem competitiva&quot; o que, na verdade, é um desespero por crescimento em um mercado saturado. Vamos analisar a realidade por trás da fachada de &quot;potência financeira&quot;.</p>
+<h6>1. O Risco de &quot;Estar na Vanguarda&quot; é um Veneno Regulatório</h6>
+<p>Você elogia a introdução de derivativos de criptoativos com alavancagem de 10x e mercados de predição como uma inovação. Eu os vejo como o início de um pesadelo regulatório. A <code>HOOD</code> está tentando desesperadamente manter o engajamento através de produtos de altíssimo risco, atraindo a atenção indesejada do CFTC e de outros reguladores. O histórico da empresa com o regulador é conturbado; dobrar a aposta em produtos complexos que podem levar usuários à ruína financeira não é &quot;inovação&quot;, é atrair um alvo para as costas. Quando a regulação apertar — e ela sempre aperta para quem escala alavancagem para o varejo — a sua &quot;vantagem&quot; se tornará um custo operacional massivo ou uma proibição direta.</p>
+<h6>2. Crescimento Baseado em Volatilidade: Um Vício Perigoso</h6>
+<p>Você cita o salto na receita como prova de maturidade, mas ele é, na verdade, uma prova de dependência. O modelo de negócios da <code>HOOD</code> é ciclicamente dependente do interesse do varejo em ativos altamente especulativos. O fato de a receita subir quando a especulação está no auge não indica uma empresa de tecnologia financeira &quot;robusta&quot;, mas sim uma corretora de cassino. Se o apetite ao risco dos investidores diminuir, ou se o mercado de cripto sofrer uma correção estrutural, esse &quot;músculo financeiro&quot; que você menciona começará a atrofiar rapidamente. A sustentabilidade desse lucro é questionável porque ele não vem de serviços financeiros essenciais e diversificados, mas de apostas de curto prazo dos usuários.</p>
+<h6>3. Falta de Fôlego Técnico</h6>
+<p>Sua leitura dos indicadores técnicos é perigosamente otimista. Você ignora que, apesar de estarmos acima da média de 200 dias, o momentum de curto prazo (MACD negativo em -1,22 abaixo da linha de sinal) é um alerta claro de exaustão. O fato de a <code>HOOD</code> estar negociando abaixo da EMA de 10 dias, mesmo com o mercado de tecnologia em recordes, mostra que o comprador já não tem a convicção de antes. Não estamos &quot;consolidando&quot; para subir; estamos perdendo fôlego após um rali que, francamente, já está muito caro.</p>
+<h6>Refutando o seu &quot;Ponto de Entrada&quot;</h6>
+<p>Você sugere acumular em 105-106 USD como se fosse um porto seguro. O que você chama de suporte, eu chamo de zona de perigo. Se a <code>HOOD</code> perder os 105 USD, o suporte técnico é inexistente até patamares muito inferiores. Você está recomendando comprar em uma faca caindo enquanto os indicadores de momentum estão virando para baixo. Isso não é estratégia, é torcida.</p>
+<p><strong>Rating</strong>: Bearish</p>
+<p>FINAL TRANSACTION PROPOSAL: Recomendo reduzir posições ou realizar lucros nos níveis atuais. Evite a exposição à <code>HOOD</code> antes de uma correção técnica mais profunda e de maior clareza sobre o impacto das investigações regulatórias nos novos produtos de alavancagem. O risco-retorno atual é desfavorável.</p>
+<h3 id="s2-3">Research Manager</h3>
+<p><strong>Recommendation</strong>: Overweight</p>
+<p><strong>Rationale</strong>: O debate apresentou uma divisão clara entre a forte execução operacional e o crescimento de receita e lucro líquido da HOOD, sustentados por inovação e uma sólida posição de caixa, em contraste com os riscos regulatórios associados a derivativos e o enfraquecimento técnico de curto prazo apontado pelos indicadores. No final, os argumentos fundamentais do lado Bull — evidenciados pelo salto expressivo na receita trimestral, lucro líquido de 561 milhões de dólares e forte geração de fluxo de caixa — pesaram mais do que os temores especulativos do Bear. No entanto, diante da cautela técnica de curto prazo e dos alertas de momentum, a melhor postura é a de acumulação gradual nos suportes, justificando uma recomendação construtiva de Overweight em vez de compra agressiva.</p>
+<p><strong>Strategic Actions</strong>: Instruir o trader a iniciar ou aumentar gradualmente a exposição à HOOD de forma escalonada, aproveitando os recuos em direção à zona de suporte técnico de 105-106 USD. Recomenda-se dimensionar a entrada em uma fração moderada (metade) de uma alocação padrão, mantendo reserva para novas compras caso ocorram correções técnicas mais profundas conforme alertado pela análise de momentum.</p>
+</section><section id="s3"><h2>III. Trading Team Plan</h2><h3 id="s3-1">Trader</h3>
+<p><strong>Action</strong>: Buy</p>
+<p><strong>Reasoning</strong>: Embora a análise técnica indique uma consolidação no curto prazo com o MACD pressionado, a tese fundamental do plano de investimento destaca um desempenho operacional robusto e forte geração de caixa. A estratégia de acumulação gradual proposta é justificada pela resiliência da HOOD em manter-se acima das médias de 50 e 200 dias. Portanto, iniciaremos uma posição escalonada aproveitando a proximidade com o suporte técnico relevante para capturar o potencial de alta estrutural.</p>
+<p><strong>Entry Price</strong>: 105.78</p>
+<p><strong>Stop Loss</strong>: 94.3</p>
+<p><strong>Position Sizing</strong>: 50% de uma alocação padrão</p>
+<p>FINAL TRANSACTION PROPOSAL: <strong>BUY</strong></p>
+</section><section id="s4"><h2>IV. Risk Management Team Decision</h2><h3 id="s4-1">Aggressive Analyst</h3>
+<p>Aggressive Analyst: Como Analista de Risco Agressivo, minha leitura é clara: a hesitação é o custo da oportunidade perdida. Enquanto os analistas neutros e conservadores se perdem em observações sobre médias móveis e MACD, a <code>HOOD</code> está executando uma transformação agressiva em seu modelo de negócios que ignora as métricas estáticas do passado.</p>
+<p>Minha recomendação de compra não é apenas uma aposta no gráfico; é uma aposta na disrupção financeira que a <code>HOOD</code> lidera. Eles estão implementando <em>trading</em> 24/7, alavancagem de 10x em criptoativos e mercados de predição — movimentos que, por definição, atraem volume, receita e domínio de mercado. Aqueles que focam no &quot;momentum de curto prazo&quot; estão ignorando o fato de que a <code>HOOD</code> entregou um lucro líquido de 561 milhões de dólares no segundo trimestre de 2026. Estamos falando de uma máquina de gerar caixa, com mais de 2,7 bilhões de dólares em fluxo de caixa operacional acumulado no semestre. Ignorar esse fundamento em nome de um histograma de MACD negativo é um erro tático grave.</p>
+<p>Para os analistas neutros que clamam por &quot;aguardar a confirmação de força&quot;, eu pergunto: o que é mais confirmatório do que uma empresa que saltou de 386 milhões para 561 milhões de lucro em um ano? O mercado financeiro premia a antecipação, não a validação tardia. O suporte em 105,78 USD (SMA de 50 dias) é, na verdade, uma zona de carregamento privilegiada. O risco regulatório citado pelos conservadores é o preço natural da inovação; grandes players como o Bank of America já entenderam que a <code>HOOD</code> não é apenas uma corretora, é um ecossistema.</p>
+<p>Se esperarmos um fechamento acima de 116 USD ou um cruzamento positivo do MACD para entrar, já teremos perdido o <em>upside</em> desse movimento de acumulação. Estamos posicionados para capturar a próxima onda de expansão impulsionada pelo otimismo tecnológico que mantém o Nasdaq em recordes. A estratégia de alocação de 50% é o equilíbrio perfeito: protege o capital enquanto nos garante uma exposição significativa ao momento em que a resiliência operacional da <code>HOOD</code> se traduzir, novamente, em um rali explosivo. A cautela é um luxo que investidores que buscam crescimento exponencial não podem se dar. Vamos aproveitar a volatilidade, não temê-la.</p>
+<p><strong>Rating</strong>: Bullish</p>
+<p>FINAL TRANSACTION PROPOSAL: <strong>BUY</strong></p>
+<h3 id="s4-2">Conservative Analyst</h3>
+<p>Conservative Analyst: Como Analista de Risco, meu dever é proteger o capital da firma de decisões emocionais impulsionadas pelo &quot;FOMO&quot; ou pelo entusiasmo excessivo com o crescimento operacional. Entendo o apelo fundamentalista apontado pelo Analista Agressivo, mas confundir uma empresa lucrativa com uma entrada de baixo risco é um erro estratégico perigoso.</p>
+<p>A <code>HOOD</code> apresenta, de fato, uma saúde financeira sólida no papel, mas os senhores estão negligenciando que o modelo de negócio está cada vez mais dependente de alavancagem de varejo e novos produtos especulativos. O Analista Agressivo menciona a &quot;disrupção&quot; como se ela fosse imune à gravidade do mercado. No entanto, quando a <code>HOOD</code> se expõe a alavancagem de 10x em criptoativos e mercados de predição, ela não está apenas inovando; ela está aumentando drasticamente sua sensibilidade a um choque regulatório. O risco aqui não é apenas de mercado, é de continuidade operacional. Se o regulador decide intervir ou restringir esses novos produtos, o fluxo de caixa que hoje parece &quot;robusto&quot; pode sofrer contrações súbitas.</p>
+<p>Além disso, basear uma entrada técnica em um suporte de 105,78 USD (SMA de 50 dias) enquanto o MACD indica pressão vendedora é ignorar o sinal de alerta do próprio mercado. O Analista Agressivo chama a hesitação de &quot;custo de oportunidade&quot;, mas eu chamo de &quot;preservação de capital&quot;. A volatilidade atual, medida pelo ATR de 6,02, é significativa. Entrar com 50% da posição em um momento onde o preço está abaixo da EMA de 10 dias e com momentum negativo é, na prática, tentar &quot;pegar uma faca caindo&quot;.</p>
+<p>Não estou sugerindo inatividade, estou sugerindo prudência. Acompanhar a resiliência operacional é inteligente, mas ignorar que a <code>HOOD</code> está negociando em uma zona de neutralidade total entre suas Bandas de Bollinger é um convite à ineficiência. Se a tese fundamental é tão forte, por que não aguardar uma confirmação de reversão de tendência, como um cruzamento positivo do MACD ou um fechamento acima de 116 USD, para então alocar com maior convicção e menos risco de drawdown?</p>
+<p>A cautela não é um luxo; é a disciplina que garante que a firma ainda exista quando a euforia atual for testada por uma possível correção no Nasdaq ou uma pressão do CFTC. Mantenho minha recomendação de aguardar, reduzindo a exposição imediata para evitar perdas desnecessárias em um ativo que claramente precisa de uma confirmação de força para sustentar um novo ciclo de alta.</p>
+<p><strong>Rating</strong>: Conservative</p>
+<p>FINAL TRANSACTION PROPOSAL: <strong>HOLD</strong></p>
+<h3 id="s4-3">Neutral Analyst</h3>
+<p>Neutral Analyst: Como Analista de Risco Neutro, observo que tanto o Analista Agressivo quanto o Conservador estão presos em dicotomias que ignoram a natureza dinâmica da <code>HOOD</code>.</p>
+<p>O Analista Agressivo peca pelo excesso de otimismo ao tratar a robustez fundamental como uma garantia contra a gravidade técnica. Ele ignora que o mercado financeiro, especialmente o de tecnologia, frequentemente corrige o &quot;excesso de sucesso&quot; via compressão de múltiplos, independentemente de o fluxo de caixa estar saudável. Comprar 50% de uma posição baseando-se apenas em fundamentos, enquanto o MACD sinaliza momentum de baixa, é negligenciar a gestão de risco tático: você pode estar certo na tese de longo prazo, mas ser stopado por um ruído de curto prazo que a volatilidade (ATR de 6,02) torna perfeitamente possível.</p>
+<p>Por outro lado, o Analista Conservador, ao sugerir um &quot;HOLD&quot; total até que o preço rompa 116 USD, incorre no risco de &quot;paralisia por análise&quot;. O mercado raramente oferece o sinal de confirmação perfeito sem que o preço já tenha se deslocado significativamente. Aguardar o rompimento da resistência técnica significa, muitas vezes, entrar no topo do movimento de exaustão, perdendo exatamente a margem de segurança que ele tanto preza. O medo do risco regulatório é válido, mas tratar a <code>HOOD</code> como se estivesse à beira de uma crise sistêmica ignora a solidez do balanço patrimonial de 9,5 bilhões em patrimônio líquido.</p>
+<p>Minha proposta é um meio-termo estruturado: a <code>HOOD</code> não está em um ponto de entrada &quot;tudo ou nada&quot;. O nível de 105,78 USD é, de fato, um suporte crítico (SMA 50 dias). Em vez de ignorar o risco ou esperar o sinal perfeito, sugiro uma entrada escalonada mais conservadora do que a proposta original.</p>
+<p>Reduza a alocação inicial de 50% para 25%. Isso permite capturar o benefício da resiliência fundamental e o suporte técnico sem se expor excessivamente à pressão do MACD. Se a ação reagir positivamente e cruzar a EMA de 10 dias, aumentamos a posição para os 50% planejados, usando o lucro do primeiro lote para financiar o segundo. Se o suporte de 105 USD falhar, teremos apenas metade do risco exposto, permitindo uma saída sem danos severos ao capital. Esta abordagem remove a emoção do &quot;FOMO&quot; e a rigidez da inércia, tratando a <code>HOOD</code> com a cautela técnica que a volatilidade exige e o respeito fundamental que seu crescimento merece.</p>
+<p><strong>Rating</strong>: Neutral</p>
+<p>FINAL TRANSACTION PROPOSAL: <strong>BUY (SCALED)</strong></p>
+</section><section id="s5"><h2>V. Portfolio Manager Decision</h2><h3 id="s5-1">Portfolio Manager</h3>
+<p><strong>Rating</strong>: Overweight</p>
+<p><strong>Executive Summary</strong>: Recomenda-se Overweight para acumulação gradual de HOOD. Inicie a posição de forma escalonada aproveitando o suporte técnico em torno de 105-106 USD, mantendo uma alocação moderada para mitigar a volatilidade de curto prazo.</p>
+<p><strong>Investment Thesis</strong>: A tese vencedora equilibra a forte execução operacional e o crescimento expressivo da receita e do lucro líquido (561 milhões de dólares no segundo trimestre) destacados pelo Analista Agressivo, com a cautela tática apontada pelos analistas Conservador e Neutro em relação aos indicadores de momentum (MACD pressionado) e riscos regulatórios de produtos alavancados. Embora existam pressões técnicas de curto prazo e volatilidade medida pelo ATR de 6,02, os fundamentos macro e a solidez financeira superam os ruídos especulativos, justificando uma entrada escalonada e controlada para capturar o potencial de alta estrutural sem expor excessivamente o capital.</p>
+<p><strong>Price Target</strong>: not provided</p>
+<p><strong>Time Horizon</strong>: 3-6 months</p>
+</section>
+</main>
+<footer class="credit"><a href="https://github.com/TauricResearch/TradingAgents" rel="noopener">TradingAgents</a> powered by <a class="brand" href="https://github.com/TauricResearch" rel="noopener">Tauric Research</a></footer>
+</div>
+<a class="to-top" href="#top">Top</a>
+</body>
+</html>
